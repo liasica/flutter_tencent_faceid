@@ -7,7 +7,6 @@
 }
 
 ###################### faceverify-BEGIN ###########################
--ignorewarnings
 -keep public class com.tencent.ytcommon.**{*;}
 -keep class com.tencent.turingface.sdk.*.TNative$aa { public *; }
 -keep class com.tencent.turingface.sdk.*.TNative$aa$bb { public *; }
@@ -45,7 +44,6 @@
 }
 -keep class com.tencent.kyc.toolkit.**{*;}
 ###################### face-will-BEGIN ###########################
--ignorewarnings
 -keep class com.tencent.cloud.huiyansdkface.wbwillexpressionsdk.WbFaceWillImpl{
     public <methods>;
 }

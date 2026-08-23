@@ -493,6 +493,7 @@ OCR `3.6.0` 压缩包内的 Normal 版本为 `5.1.16`。本插件与人脸 SDK �
 - 基础版人脸核身请求新增必填 `optimalDomain`，Android 和 iOS 均原样传入腾讯 SDK。
 - 人脸核身结果新增 `errorDomain`、`errorCode`、`errorDescription` 和 `errorReason`，保留旧 `error` 字段兼容现有调用方。
 - 新增模型单元测试，覆盖最优域名和结构化错误字段的序列化。
+- consumer ProGuard 规则兼容 AGP 9，不再向宿主应用注入全局 `-ignorewarnings`。
 
 ### 0.0.1 - 2024-01-17
 

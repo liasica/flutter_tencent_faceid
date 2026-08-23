@@ -24,6 +24,7 @@
 - 基础版人脸核身请求增加必填 `optimalDomain`，并在 Android、iOS 原生层透传。
 - 人脸核身结果增加错误域、错误码、错误描述和详细原因，同时保留原错误字段。
 - 增加请求与结果模型单元测试。
+- 移除 consumer ProGuard 中 AGP 9 不允许的全局 `-ignorewarnings` 选项。
 
 ## 0.0.1 - 2024-01-17
 
