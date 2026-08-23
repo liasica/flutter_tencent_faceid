@@ -9,7 +9,7 @@
 - Android 和 iOS 身份证连续 OCR。
 - Android 和 iOS 活体人脸核验。
 - OCR 结果字段、正反面裁剪图 Base64 数据。
-- 人脸核验成功状态、签名、活体分数、相似度和错误信息。
+- 人脸核验成功状态、签名、活体分数、相似度和结构化错误信息。
 - 本地 AAR、XCFramework 和 Bundle 接入，不向公开仓库提交腾讯 SDK。
 
 ## 版本与环境
@@ -253,6 +253,7 @@ OCR 参数：
 | `faceId` | `String` | 后端上传身份信息后获得的 `faceId`；具体要求取决于接入模式 |
 | `licence` | `String` | 腾讯云控制台颁发的 SDK License |
 | `nonce` | `String` | 本次请求的随机字符串 |
+| `optimalDomain` | `String` | 后端获取 `faceId` 时返回的最优接入域名，必须原样传给 SDK |
 | `orderNo` | `String` | 本次人脸核验订单号 |
 | `sign` | `String` | 后端生成的本次签名 |
 | `userId` | `String` | 业务侧用户唯一标识 |
@@ -314,7 +315,7 @@ Future<FaceVerifyResult?> startFaceVerify() async {
 }
 ```
 
-后端 JSON 中继续传入腾讯接口使用的 `licence` 和 `version`。`FaceVerifyRequest.fromJson` 会将它们分别映射为 Dart 属性 `license` 和 `apiVersion`；`toJson()` 会恢复腾讯原始 key，因此不影响原生 SDK 参数。
+后端 JSON 中继续传入腾讯接口使用的 `licence` 和 `version`，并传入创建 `faceId` 时取得的 `optimalDomain`。`FaceVerifyRequest.fromJson` 会将 `licence` 和 `version` 分别映射为 Dart 属性 `license` 和 `apiVersion`；`toJson()` 会恢复腾讯原始 key，因此不影响原生 SDK 参数。
 
 `FaceVerifyResult` 包含：
 
@@ -323,6 +324,10 @@ Future<FaceVerifyResult?> startFaceVerify() async {
 - `liveRate`：活体检测分数。
 - `similarity`：人脸比对分数。
 - `error`：核验错误描述。
+- `errorDomain`：SDK 错误域，可用于判断请求是否到达人脸比对服务。
+- `errorCode`：SDK 错误码。
+- `errorDescription`：SDK 错误详情。
+- `errorReason`：SDK 返回的详细实际原因。
 
 ### 取消和错误处理
 
@@ -357,7 +362,7 @@ dart run build_runner build
 flutter analyze
 ```
 
-仓库当前不维护模拟腾讯原生 SDK 行为的 Dart 单元测试。编译只能覆盖通道类型、原生符号和资源链接，最终业务结果必须以 Android、iOS 真机联调为准。
+仓库维护请求与结果模型单元测试，覆盖 `optimalDomain` 和结构化错误字段。编译只能覆盖通道类型、原生符号和资源链接，最终业务结果仍必须以 Android、iOS 真机联调为准。
 
 验证 Android 示例：
 
@@ -485,6 +490,9 @@ OCR `3.6.0` 压缩包内的 Normal 版本为 `5.1.16`。本插件与人脸 SDK �
 - 将代码生成输入限定在 `lib/`，避免 CocoaPods 的插件软链导致递归扫描。
 - 腾讯 SDK 统一改为本地安装并由 `.gitignore` 强制忽略。
 - 重写示例和本文档，移除内网地址与硬编码访问凭据。
+- 基础版人脸核身请求新增必填 `optimalDomain`，Android 和 iOS 均原样传入腾讯 SDK。
+- 人脸核身结果新增 `errorDomain`、`errorCode`、`errorDescription` 和 `errorReason`，保留旧 `error` 字段兼容现有调用方。
+- 新增模型单元测试，覆盖最优域名和结构化错误字段的序列化。
 
 ### 0.0.1 - 2024-01-17
 

@@ -25,6 +25,7 @@ class WBFaceVerifyManager {
                     val licence = arguments["licence"] as? String
                     val version = arguments["version"] as? String
                     val faceId = arguments["faceId"] as? String
+                    val optimalDomain = arguments["optimalDomain"] as? String
 
                     // 人脸识别参数配置
                     val inputData = WbCloudFaceVerifySdk.InputData(
@@ -38,6 +39,7 @@ class WBFaceVerifyManager {
                         FaceVerifyStatus.Mode.GRADE,
                         licence,
                     )
+                    inputData.optimalDomain = optimalDomain
 
                     val data = Bundle()
 
@@ -68,6 +70,10 @@ class WBFaceVerifyManager {
                                             "liveRate" to faceVerifyResult.liveRate,
                                             "similarity" to faceVerifyResult.similarity,
                                             "error" to faceVerifyResult.error?.toString(),
+                                            "errorDomain" to faceVerifyResult.error?.domain,
+                                            "errorCode" to faceVerifyResult.error?.code,
+                                            "errorDescription" to faceVerifyResult.error?.desc,
+                                            "errorReason" to faceVerifyResult.error?.reason,
                                         )
                                     )
                                 }
@@ -82,13 +88,37 @@ class WBFaceVerifyManager {
                             WbCloudFaceVerifySdk.getInstance().release()
 
                             Log.e(LOG_TAG, "onLoginFailed")
-                            result.success(null)
+                            result.success(
+                                mapOf(
+                                    "isSuccess" to false,
+                                    "sign" to "",
+                                    "liveRate" to "",
+                                    "similarity" to "",
+                                    "error" to error?.toString(),
+                                    "errorDomain" to error?.domain,
+                                    "errorCode" to error?.code,
+                                    "errorDescription" to error?.desc,
+                                    "errorReason" to error?.reason,
+                                )
+                            )
                         }
                     })
                 }
             } catch (e: Exception) {
                 Log.e(LOG_TAG, e.toString())
-                result.success(null)
+                result.success(
+                    mapOf(
+                        "isSuccess" to false,
+                        "sign" to "",
+                        "liveRate" to "",
+                        "similarity" to "",
+                        "error" to e.toString(),
+                        "errorDomain" to "FlutterTencentFaceId",
+                        "errorCode" to "native_exception",
+                        "errorDescription" to e.message,
+                        "errorReason" to e.cause?.message,
+                    )
+                )
             }
         }
     }

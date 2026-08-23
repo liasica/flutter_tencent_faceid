@@ -20,7 +20,11 @@ mixin _$FaceVerifyResult {
  String get sign;/// 活体检测分数
  String get liveRate;/// 人脸比对分数
  String get similarity;/// 人脸核身错误
- String? get error;
+ String? get error;/// SDK 错误域，用于判断请求是否到达人脸比对服务
+ String? get errorDomain;/// SDK 错误码
+ String? get errorCode;/// SDK 错误描述
+ String? get errorDescription;/// SDK 错误的详细原因
+ String? get errorReason;
 /// Create a copy of FaceVerifyResult
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -33,12 +37,12 @@ $FaceVerifyResultCopyWith<FaceVerifyResult> get copyWith => _$FaceVerifyResultCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FaceVerifyResult&&(identical(other.isSuccess, isSuccess) || other.isSuccess == isSuccess)&&(identical(other.sign, sign) || other.sign == sign)&&(identical(other.liveRate, liveRate) || other.liveRate == liveRate)&&(identical(other.similarity, similarity) || other.similarity == similarity)&&(identical(other.error, error) || other.error == error));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FaceVerifyResult&&(identical(other.isSuccess, isSuccess) || other.isSuccess == isSuccess)&&(identical(other.sign, sign) || other.sign == sign)&&(identical(other.liveRate, liveRate) || other.liveRate == liveRate)&&(identical(other.similarity, similarity) || other.similarity == similarity)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorDomain, errorDomain) || other.errorDomain == errorDomain)&&(identical(other.errorCode, errorCode) || other.errorCode == errorCode)&&(identical(other.errorDescription, errorDescription) || other.errorDescription == errorDescription)&&(identical(other.errorReason, errorReason) || other.errorReason == errorReason));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,isSuccess,sign,liveRate,similarity,error);
+int get hashCode => Object.hash(runtimeType,isSuccess,sign,liveRate,similarity,error,errorDomain,errorCode,errorDescription,errorReason);
 
 
 
@@ -49,7 +53,7 @@ abstract mixin class $FaceVerifyResultCopyWith<$Res>  {
   factory $FaceVerifyResultCopyWith(FaceVerifyResult value, $Res Function(FaceVerifyResult) _then) = _$FaceVerifyResultCopyWithImpl;
 @useResult
 $Res call({
- bool isSuccess, String sign, String liveRate, String similarity, String? error
+ bool isSuccess, String sign, String liveRate, String similarity, String? error, String? errorDomain, String? errorCode, String? errorDescription, String? errorReason
 });
 
 
@@ -66,13 +70,17 @@ class _$FaceVerifyResultCopyWithImpl<$Res>
 
 /// Create a copy of FaceVerifyResult
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? isSuccess = null,Object? sign = null,Object? liveRate = null,Object? similarity = null,Object? error = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? isSuccess = null,Object? sign = null,Object? liveRate = null,Object? similarity = null,Object? error = freezed,Object? errorDomain = freezed,Object? errorCode = freezed,Object? errorDescription = freezed,Object? errorReason = freezed,}) {
   return _then(_self.copyWith(
 isSuccess: null == isSuccess ? _self.isSuccess : isSuccess // ignore: cast_nullable_to_non_nullable
 as bool,sign: null == sign ? _self.sign : sign // ignore: cast_nullable_to_non_nullable
 as String,liveRate: null == liveRate ? _self.liveRate : liveRate // ignore: cast_nullable_to_non_nullable
 as String,similarity: null == similarity ? _self.similarity : similarity // ignore: cast_nullable_to_non_nullable
 as String,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
+as String?,errorDomain: freezed == errorDomain ? _self.errorDomain : errorDomain // ignore: cast_nullable_to_non_nullable
+as String?,errorCode: freezed == errorCode ? _self.errorCode : errorCode // ignore: cast_nullable_to_non_nullable
+as String?,errorDescription: freezed == errorDescription ? _self.errorDescription : errorDescription // ignore: cast_nullable_to_non_nullable
+as String?,errorReason: freezed == errorReason ? _self.errorReason : errorReason // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -158,10 +166,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isSuccess,  String sign,  String liveRate,  String similarity,  String? error)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isSuccess,  String sign,  String liveRate,  String similarity,  String? error,  String? errorDomain,  String? errorCode,  String? errorDescription,  String? errorReason)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _FaceVerifyResult() when $default != null:
-return $default(_that.isSuccess,_that.sign,_that.liveRate,_that.similarity,_that.error);case _:
+return $default(_that.isSuccess,_that.sign,_that.liveRate,_that.similarity,_that.error,_that.errorDomain,_that.errorCode,_that.errorDescription,_that.errorReason);case _:
   return orElse();
 
 }
@@ -179,10 +187,10 @@ return $default(_that.isSuccess,_that.sign,_that.liveRate,_that.similarity,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isSuccess,  String sign,  String liveRate,  String similarity,  String? error)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isSuccess,  String sign,  String liveRate,  String similarity,  String? error,  String? errorDomain,  String? errorCode,  String? errorDescription,  String? errorReason)  $default,) {final _that = this;
 switch (_that) {
 case _FaceVerifyResult():
-return $default(_that.isSuccess,_that.sign,_that.liveRate,_that.similarity,_that.error);case _:
+return $default(_that.isSuccess,_that.sign,_that.liveRate,_that.similarity,_that.error,_that.errorDomain,_that.errorCode,_that.errorDescription,_that.errorReason);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -199,10 +207,10 @@ return $default(_that.isSuccess,_that.sign,_that.liveRate,_that.similarity,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isSuccess,  String sign,  String liveRate,  String similarity,  String? error)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isSuccess,  String sign,  String liveRate,  String similarity,  String? error,  String? errorDomain,  String? errorCode,  String? errorDescription,  String? errorReason)?  $default,) {final _that = this;
 switch (_that) {
 case _FaceVerifyResult() when $default != null:
-return $default(_that.isSuccess,_that.sign,_that.liveRate,_that.similarity,_that.error);case _:
+return $default(_that.isSuccess,_that.sign,_that.liveRate,_that.similarity,_that.error,_that.errorDomain,_that.errorCode,_that.errorDescription,_that.errorReason);case _:
   return null;
 
 }
@@ -214,7 +222,7 @@ return $default(_that.isSuccess,_that.sign,_that.liveRate,_that.similarity,_that
 @JsonSerializable()
 
 class _FaceVerifyResult implements FaceVerifyResult {
-  const _FaceVerifyResult({this.isSuccess = false, this.sign = '', this.liveRate = '', this.similarity = '', this.error});
+  const _FaceVerifyResult({this.isSuccess = false, this.sign = '', this.liveRate = '', this.similarity = '', this.error, this.errorDomain, this.errorCode, this.errorDescription, this.errorReason});
   factory _FaceVerifyResult.fromJson(Map<String, dynamic> json) => _$FaceVerifyResultFromJson(json);
 
 /// 人脸核身是否成功
@@ -227,6 +235,14 @@ class _FaceVerifyResult implements FaceVerifyResult {
 @override@JsonKey() final  String similarity;
 /// 人脸核身错误
 @override final  String? error;
+/// SDK 错误域，用于判断请求是否到达人脸比对服务
+@override final  String? errorDomain;
+/// SDK 错误码
+@override final  String? errorCode;
+/// SDK 错误描述
+@override final  String? errorDescription;
+/// SDK 错误的详细原因
+@override final  String? errorReason;
 
 /// Create a copy of FaceVerifyResult
 /// with the given fields replaced by the non-null parameter values.
@@ -241,12 +257,12 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FaceVerifyResult&&(identical(other.isSuccess, isSuccess) || other.isSuccess == isSuccess)&&(identical(other.sign, sign) || other.sign == sign)&&(identical(other.liveRate, liveRate) || other.liveRate == liveRate)&&(identical(other.similarity, similarity) || other.similarity == similarity)&&(identical(other.error, error) || other.error == error));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FaceVerifyResult&&(identical(other.isSuccess, isSuccess) || other.isSuccess == isSuccess)&&(identical(other.sign, sign) || other.sign == sign)&&(identical(other.liveRate, liveRate) || other.liveRate == liveRate)&&(identical(other.similarity, similarity) || other.similarity == similarity)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorDomain, errorDomain) || other.errorDomain == errorDomain)&&(identical(other.errorCode, errorCode) || other.errorCode == errorCode)&&(identical(other.errorDescription, errorDescription) || other.errorDescription == errorDescription)&&(identical(other.errorReason, errorReason) || other.errorReason == errorReason));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,isSuccess,sign,liveRate,similarity,error);
+int get hashCode => Object.hash(runtimeType,isSuccess,sign,liveRate,similarity,error,errorDomain,errorCode,errorDescription,errorReason);
 
 
 
@@ -257,7 +273,7 @@ abstract mixin class _$FaceVerifyResultCopyWith<$Res> implements $FaceVerifyResu
   factory _$FaceVerifyResultCopyWith(_FaceVerifyResult value, $Res Function(_FaceVerifyResult) _then) = __$FaceVerifyResultCopyWithImpl;
 @override @useResult
 $Res call({
- bool isSuccess, String sign, String liveRate, String similarity, String? error
+ bool isSuccess, String sign, String liveRate, String similarity, String? error, String? errorDomain, String? errorCode, String? errorDescription, String? errorReason
 });
 
 
@@ -274,13 +290,17 @@ class __$FaceVerifyResultCopyWithImpl<$Res>
 
 /// Create a copy of FaceVerifyResult
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? isSuccess = null,Object? sign = null,Object? liveRate = null,Object? similarity = null,Object? error = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? isSuccess = null,Object? sign = null,Object? liveRate = null,Object? similarity = null,Object? error = freezed,Object? errorDomain = freezed,Object? errorCode = freezed,Object? errorDescription = freezed,Object? errorReason = freezed,}) {
   return _then(_FaceVerifyResult(
 isSuccess: null == isSuccess ? _self.isSuccess : isSuccess // ignore: cast_nullable_to_non_nullable
 as bool,sign: null == sign ? _self.sign : sign // ignore: cast_nullable_to_non_nullable
 as String,liveRate: null == liveRate ? _self.liveRate : liveRate // ignore: cast_nullable_to_non_nullable
 as String,similarity: null == similarity ? _self.similarity : similarity // ignore: cast_nullable_to_non_nullable
 as String,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
+as String?,errorDomain: freezed == errorDomain ? _self.errorDomain : errorDomain // ignore: cast_nullable_to_non_nullable
+as String?,errorCode: freezed == errorCode ? _self.errorCode : errorCode // ignore: cast_nullable_to_non_nullable
+as String?,errorDescription: freezed == errorDescription ? _self.errorDescription : errorDescription // ignore: cast_nullable_to_non_nullable
+as String?,errorReason: freezed == errorReason ? _self.errorReason : errorReason // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

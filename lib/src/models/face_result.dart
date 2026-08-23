@@ -21,6 +21,18 @@ abstract class FaceVerifyResult with _$FaceVerifyResult {
 
     /// 人脸核身错误
     String? error,
+
+    /// SDK 错误域，用于判断请求是否到达人脸比对服务
+    String? errorDomain,
+
+    /// SDK 错误码
+    String? errorCode,
+
+    /// SDK 错误描述
+    String? errorDescription,
+
+    /// SDK 错误的详细原因
+    String? errorReason,
   }) = _FaceVerifyResult;
 
   factory FaceVerifyResult.fromJson(Map<String, dynamic> json) =>

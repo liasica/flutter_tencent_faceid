@@ -65,7 +65,8 @@ public class FlutterTencentFaceIdPlugin: NSObject, FlutterPlugin {
            let orderNo = args["orderNo"] as? String,
            let licence = args["licence"] as? String,
            let version = args["version"] as? String,
-           let faceId = args["faceId"] as? String {
+           let faceId = args["faceId"] as? String,
+           let optimalDomain = args["optimalDomain"] as? String {
             manager.start(
                 userId: userId,
                 nonce: nonce,
@@ -74,7 +75,8 @@ public class FlutterTencentFaceIdPlugin: NSObject, FlutterPlugin {
                 orderNo: orderNo,
                 licence: licence,
                 version: version,
-                faceId: faceId
+                faceId: faceId,
+                optimalDomain: optimalDomain
             )
         } else {
             result(nil)

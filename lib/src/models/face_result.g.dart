@@ -13,6 +13,10 @@ _FaceVerifyResult _$FaceVerifyResultFromJson(Map<String, dynamic> json) =>
       liveRate: json['liveRate'] as String? ?? '',
       similarity: json['similarity'] as String? ?? '',
       error: json['error'] as String?,
+      errorDomain: json['errorDomain'] as String?,
+      errorCode: json['errorCode'] as String?,
+      errorDescription: json['errorDescription'] as String?,
+      errorReason: json['errorReason'] as String?,
     );
 
 Map<String, dynamic> _$FaceVerifyResultToJson(_FaceVerifyResult instance) =>
@@ -22,4 +26,8 @@ Map<String, dynamic> _$FaceVerifyResultToJson(_FaceVerifyResult instance) =>
       'liveRate': instance.liveRate,
       'similarity': instance.similarity,
       'error': instance.error,
+      'errorDomain': instance.errorDomain,
+      'errorCode': instance.errorCode,
+      'errorDescription': instance.errorDescription,
+      'errorReason': instance.errorReason,
     };

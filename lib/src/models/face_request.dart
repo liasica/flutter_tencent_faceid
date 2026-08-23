@@ -9,6 +9,7 @@ part 'face_request.g.dart';
 /// [faceId] 后端上传身份信息后取得的人脸核验标识
 /// [license] 腾讯云控制台颁发的 SDK License
 /// [nonce] 单次请求的一次性随机字符串
+/// [optimalDomain] 后端创建 FaceID 会话时返回的最优接入域名
 /// [orderNo] 本次请求的唯一订单号，最长 32 个字符
 /// [sign] 由服务端生成的单次签名
 /// [userId] 用户唯一标识
@@ -20,6 +21,7 @@ abstract class FaceVerifyRequest with _$FaceVerifyRequest {
     required String faceId,
     @JsonKey(name: 'licence') required String license,
     required String nonce,
+    required String optimalDomain,
     required String orderNo,
     required String sign,
     required String userId,
