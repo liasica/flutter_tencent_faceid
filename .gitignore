@@ -37,3 +37,6 @@ replace-bundle-id.sh
 
 # superpowers 过程文件
 .superpowers/
+
+# git worktree 隔离工作区
+.worktrees/
