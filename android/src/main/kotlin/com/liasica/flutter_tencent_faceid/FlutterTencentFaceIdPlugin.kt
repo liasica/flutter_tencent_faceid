@@ -1,7 +1,6 @@
-package com.liasica.flutter_wb_face
+package com.liasica.flutter_tencent_faceid
 
 import android.app.Activity
-import android.content.Context
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -10,44 +9,51 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 
-/** FlutterWbFacePlugin */
-class FlutterWbFacePlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
-    /// The MethodChannel that will the communication between Flutter and native Android
-    ///
-    /// This local reference serves to register the plugin with the Flutter Engine and unregister it
-    /// when the Flutter Engine is detached from the Activity
+/** 腾讯云人脸核身 Flutter 插件 */
+class FlutterTencentFaceIdPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private lateinit var channel: MethodChannel
 
-    private lateinit var context: Context
-
-    private lateinit var activity: Activity
+    private var activity: Activity? = null
 
     companion object {
-        const val METHOD_CHANNEL_NAME = "com.liasica.flutter_wb_face/method"
-        const val LOG_TAG = "FLUTTER_WB_FACE"
+        const val METHOD_CHANNEL_NAME = "com.liasica.flutter_tencent_faceid/method"
+        const val LOG_TAG = "FLUTTER_TENCENT_FACEID"
+        const val ERROR_NO_ACTIVITY = "NO_ACTIVITY"
     }
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-        context = flutterPluginBinding.applicationContext
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, METHOD_CHANNEL_NAME)
         channel.setMethodCallHandler(this)
     }
 
     override fun onDetachedFromEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
+        activity = null
     }
 
-    override fun onDetachedFromActivityForConfigChanges() {}
+    override fun onDetachedFromActivityForConfigChanges() {
+        activity = null
+    }
 
-    override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {}
+    override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+        activity = binding.activity
+    }
 
-    override fun onDetachedFromActivity() {}
+    override fun onDetachedFromActivity() {
+        activity = null
+    }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
+        val currentActivity = activity
+        if (currentActivity == null) {
+            result.error(ERROR_NO_ACTIVITY, "插件尚未附着到 Activity", null)
+            return
+        }
+
         try {
             when (call.method) {
-                "ocr" -> WBOCRManager.start(activity, call.arguments as Map<*, *>?, result)
-                "face" -> WBFaceVerifyManager.start(activity, call.arguments as Map<*, *>?, result)
+                "ocr" -> WBOCRManager.start(currentActivity, call.arguments as Map<*, *>?, result)
+                "face" -> WBFaceVerifyManager.start(currentActivity, call.arguments as Map<*, *>?, result)
                 else -> result.notImplemented()
             }
         } catch (e: Exception) {

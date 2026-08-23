@@ -1,4 +1,4 @@
-package com.liasica.flutter_wb_face
+package com.liasica.flutter_tencent_faceid
 
 import android.app.Activity
 import android.os.Bundle
@@ -26,6 +26,7 @@ class WBOCRManager {
                     val version = arguments["version"] as? String
 
                     WbCloudOcrConfig.getInstance().isRetCrop = true
+                    WbCloudOcrConfig.getInstance().isRetPhoto = true
 
                     // OCR参数配置
                     val data = Bundle()
@@ -48,7 +49,7 @@ class WBOCRManager {
                             Log.i(LOG_TAG, "onLoginSuccess")
 
                             WbCloudOcrSDK.getInstance().startActivityForOcr(activity) { _, _, parcel ->
-                                Log.i(LOG_TAG, "onFinish: $parcel")
+                                Log.i(LOG_TAG, "onFinish")
                                 if (parcel != null) {
                                     val exidCardResult = parcel as EXIDCardResult
                                     result.success(mapOf(
@@ -68,8 +69,12 @@ class WBOCRManager {
                                         "frontMsg" to exidCardResult.frontMsg,
                                         "backCode" to exidCardResult.backCode,
                                         "backMsg" to exidCardResult.backMsg,
-                                        "frontCrop" to Utils.convertImageFileToBase64(File(exidCardResult.frontCropSrc)),
-                                        "backCrop" to Utils.convertImageFileToBase64(File(exidCardResult.backCropSrc)),
+                                        "frontCrop" to exidCardResult.frontCropSrc?.let {
+                                            Utils.convertImageFileToBase64(File(it))
+                                        },
+                                        "backCrop" to exidCardResult.backCropSrc?.let {
+                                            Utils.convertImageFileToBase64(File(it))
+                                        },
                                     ))
                                 } else {
                                     result.success(null)
@@ -79,7 +84,7 @@ class WBOCRManager {
 
                         // 登录失败
                         override fun onLoginFailed(errorCode: String?, errorMsg: String?) {
-                            Log.e(LOG_TAG, "onLoginFailed: $errorCode, $errorMsg")
+                            Log.e(LOG_TAG, "onLoginFailed: $errorCode")
                             result.success(null)
                         }
                     })

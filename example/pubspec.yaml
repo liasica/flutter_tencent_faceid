@@ -1,12 +1,13 @@
-name: flutter_wb_face_example
-description: "Demonstrates how to use the flutter_wb_face plugin."
+name: flutter_tencent_faceid_example
+description: "Demonstrates how to use the flutter_tencent_faceid plugin."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: '>=3.9.0 <4.0.0'
+  flutter: '>=3.41.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -18,32 +19,24 @@ dependencies:
   flutter:
     sdk: flutter
 
-  flutter_wb_face:
-    # When depending on this package from a real application you should use:
-    #   flutter_wb_face: ^x.y.z
-    # See https://dart.dev/tools/pub/dependencies#version-constraints
-    # The example app is bundled with the plugin so we use a path dependency on
-    # the parent directory to use the current plugin's version.
+  # 业务应用应按根目录 README 使用 GitHub Git 依赖：
+  # flutter_tencent_faceid:
+  #   git:
+  #     url: https://github.com/liasica/flutter_tencent_faceid.git
+  #     ref: master
+  # 仓库内示例使用 path，以便直接验证当前工作区代码。
+  flutter_tencent_faceid:
     path: ../
 
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.2
-  permission_handler: ^11.1.0
-  http: ^1.1.2
+  permission_handler: ^12.0.3
 
 dev_dependencies:
-  integration_test:
-    sdk: flutter
-  flutter_test:
-    sdk: flutter
-
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^2.0.0
+  flutter_lints: ^6.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -1,4 +1,4 @@
-package com.liasica.flutter_wb_face
+package com.liasica.flutter_tencent_faceid
 
 import android.app.Activity
 import android.os.Bundle
@@ -81,7 +81,7 @@ class WBFaceVerifyManager {
                             // 释放资源
                             WbCloudFaceVerifySdk.getInstance().release()
 
-                            Log.e(LOG_TAG, "onLoginFailed: ${error.toString()}")
+                            Log.e(LOG_TAG, "onLoginFailed")
                             result.success(null)
                         }
                     })

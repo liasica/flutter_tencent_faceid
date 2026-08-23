@@ -1,6 +1,6 @@
 //
 //  WBOCRManager.swift
-//  flutter_wb_face
+//  flutter_tencent_faceid
 //
 //  Created by liasica on 2024/1/15.
 //
@@ -40,7 +40,6 @@ public class WBOCRManager {
                 succeed: {
                     print(LOG_TAG, "initSDK 成功，开始调起OCR")
                     WBOCRService.shared().start { resultModel, _ in
-                        print(LOG_TAG, resultModel)
                         if let res = resultModel as? WBIDCardInfoModel {
                             result([
                                 "idcard": res.idcard,
@@ -65,13 +64,13 @@ public class WBOCRManager {
                         } else {
                             result(nil)
                         }
-                    } failed: { error, _ in
-                        print(LOG_TAG, "startOCRService failed:", error)
+                    } failed: { _, _ in
+                        print(LOG_TAG, "startOCRService failed")
                         result(nil)
                     }
                 },
-                failed: {error, _ in
-                    print(LOG_TAG, "initSDK 失败:", error)
+                failed: { _, _ in
+                    print(LOG_TAG, "initSDK 失败")
                     result(nil)
                 }
             )

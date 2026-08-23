@@ -2,12 +2,12 @@ import Flutter
 import TencentCloudHuiyanSDKFace
 import UIKit
 
-public class FlutterWbFacePlugin: NSObject, FlutterPlugin {
-    static let methodChannelName = "com.liasica.flutter_wb_face/method"
+public class FlutterTencentFaceIdPlugin: NSObject, FlutterPlugin {
+    static let methodChannelName = "com.liasica.flutter_tencent_faceid/method"
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: methodChannelName, binaryMessenger: registrar.messenger())
-        let instance = FlutterWbFacePlugin()
+        let instance = FlutterTencentFaceIdPlugin()
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
     

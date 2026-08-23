@@ -1,14 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'wb_face_verify_result_model.dart';
+part of 'face_result.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$WbFaceVerifyResultModelImpl _$$WbFaceVerifyResultModelImplFromJson(
-        Map<String, dynamic> json) =>
-    _$WbFaceVerifyResultModelImpl(
+_FaceVerifyResult _$FaceVerifyResultFromJson(Map<String, dynamic> json) =>
+    _FaceVerifyResult(
       isSuccess: json['isSuccess'] as bool? ?? false,
       sign: json['sign'] as String? ?? '',
       liveRate: json['liveRate'] as String? ?? '',
@@ -16,8 +15,7 @@ _$WbFaceVerifyResultModelImpl _$$WbFaceVerifyResultModelImplFromJson(
       error: json['error'] as String?,
     );
 
-Map<String, dynamic> _$$WbFaceVerifyResultModelImplToJson(
-        _$WbFaceVerifyResultModelImpl instance) =>
+Map<String, dynamic> _$FaceVerifyResultToJson(_FaceVerifyResult instance) =>
     <String, dynamic>{
       'isSuccess': instance.isSuccess,
       'sign': instance.sign,

@@ -13,19 +13,22 @@
 -keep class com.tencent.turingface.sdk.*.TNative$aa$bb { public *; }
 -keep class com.tencent.turingcam.** {*;}
 
--keep public class com.tencent.youtu.ytagreflectlivecheck.jni.**{*;}
--keep public class com.tencent.youtu.ytagreflectlivecheck.YTAGReflectLiveCheckInterface{
+-keep public class com.tencent.cloud.nativeapi.reflect.jni.**{*;}
+-keep public class com.tencent.cloud.nativeapi.reflect.YTAGReflectLiveCheckInterface{
     public <methods>;
 }
--keep public class com.tencent.youtu.ytposedetect.jni.**{*;}
--keep public class com.tencent.youtu.ytposedetect.data.**{*;}
+
+# 保护外部库依赖
+-keep public class com.tencent.youtu.** {*;}
+-keep public class com.tencent.cloud.nativeapi.pose.jni.**{*;}
+-keep public class com.tencent.cloud.nativeapi.pose.data.**{*;}
 -keep public class com.tencent.youtu.liveness.YTDeviceInfo{*;}
--keep public class com.tencent.youtu.liveness.YTFaceTracker{*;}
--keep public class com.tencent.youtu.liveness.YTFaceTracker$*{*;}
--keep public class com.tencent.youtu.sdkkitframework.liveness.framework.YtSDKKitFrameworkTool{
+# 保护 nativeapi 包下的所有类不被混淆
+-keep class com.tencent.cloud.nativeapi.** {*;}
+-keep public class com.tencent.cloud.nativeapi.framework.YtSDKKitFrameworkTool{
    public *;
 }
--keep public class com.tencent.youtu.sdkkitframework.liveness.common.YTImageData{
+-keep public class com.tencent.cloud.nativeapi.framework.common.YTImageData{
    *;
 }
 -keep public class com.tencent.cloud.huiyansdkface.facelight.net.*$*{
@@ -38,6 +41,21 @@
     public <fields>;
 }
 -keep public class com.tencent.cloud.huiyansdkface.facelight.provider.WbUiTips{
+    *;
+}
+-keep class com.tencent.kyc.toolkit.**{*;}
+###################### face-will-BEGIN ###########################
+-ignorewarnings
+-keep class com.tencent.cloud.huiyansdkface.wbwillexpressionsdk.WbFaceWillImpl{
+    public <methods>;
+}
+-keep public class com.tencent.cloud.huiyansdkface.wbwillexpressionsdk.config.WbWillUiTips{
+    *;
+}
+-keep public class com.tencent.cloud.huiyansdkface.wbwillexpressionsdk.net.*$*{
+    *;
+}
+-keep public class com.tencent.cloud.huiyansdkface.wbwillexpressionsdk.net.**{
     *;
 }
 
@@ -84,5 +102,3 @@
 -dontwarn com.tencent.cloud.huiyansdkface.okhttp3.OkHttpClient$Builder
 
 ####################### normal混淆规则-END#############################
-
-

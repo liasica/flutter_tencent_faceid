@@ -1,4 +1,4 @@
-package com.liasica.flutter_wb_face
+package com.liasica.flutter_tencent_faceid
 
 import android.util.Base64
 import android.util.Base64OutputStream

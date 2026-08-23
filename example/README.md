@@ -1,16 +1,21 @@
-# flutter_wb_face_example
+# flutter_tencent_faceid_example
 
-Demonstrates how to use the flutter_wb_face plugin.
+`flutter_tencent_faceid` 示例工程。运行前请先按根目录 [README](../README.md) 安装 Android 和 iOS 腾讯 SDK。
 
-## Getting Started
+示例不包含后端地址、访问 Token 或签名密钥。运行后需要粘贴业务后端为单次 OCR 或人脸核验生成的临时 JSON 参数。
 
-This project is a starting point for a Flutter application.
+## 运行
 
-A few resources to get you started if this is your first Flutter project:
+```shell
+flutter pub get
+flutter run
+```
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Android 运行前需要授予相机权限。iOS 需要先在 `ios/` 目录执行 `pod install`，并使用已配置腾讯服务的真机验证。
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 参数
+
+- OCR JSON 需要包含 `appId`、`userId`、`orderNo`、`version`、`nonce` 和 `sign`。
+- 人脸核验 JSON 需要包含 `appId`、`faceId`、`licence`、`nonce`、`orderNo`、`sign`、`userId` 和 `version`。
+
+以上参数必须由业务后端为本次请求临时生成。示例会隐藏 OCR 图片的 Base64 正文，只显示长度，避免将完整身份证图片展示或复制到日志中。

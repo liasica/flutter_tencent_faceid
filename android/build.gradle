@@ -1,8 +1,8 @@
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
-group 'com.liasica.flutter_wb_face'
-version '1.0'
+group 'com.liasica.flutter_tencent_faceid'
+version '1.0.0'
 
 buildscript {
     ext.kotlin_version = '1.7.10'
@@ -41,7 +41,7 @@ apply plugin: 'kotlin-android'
 
 android {
     if (project.android.hasProperty("namespace")) {
-        namespace 'com.liasica.flutter_wb_face'
+        namespace 'com.liasica.flutter_tencent_faceid'
     }
 
     compileSdkVersion 34
@@ -62,24 +62,7 @@ android {
 
     defaultConfig {
         minSdkVersion 19
-        consumerProguardFiles 'kyc-cloud-normal-proguard-rules.pro', 'kyc-cloud-face-consumer-proguard-rules.pro'
-    }
-
-    dependencies {
-        testImplementation 'org.jetbrains.kotlin:kotlin-test'
-        testImplementation 'org.mockito:mockito-core:5.5.0'
-    }
-
-    testOptions {
-        unitTests.all {
-            useJUnitPlatform()
-
-            testLogging {
-               events "passed", "skipped", "failed", "standardOut", "standardError"
-               outputs.upToDateWhen {false}
-               showStandardStreams = true
-            }
-        }
+        consumerProguardFiles 'kyc-cloud-normal-proguard-rules.pro', 'txkyc-face-consumer-proguard-rules.pro'
     }
 }
 
@@ -99,13 +82,20 @@ task useAar {
             }
         }).each { item ->
             String aarName = item.name.substring(0, item.name.length() - 4)
-            String[] aarInfo = aarName.split("-")
+            int firstSeparator = aarName.indexOf("-")
+            int lastSeparator = aarName.lastIndexOf("-")
+            if (firstSeparator <= 0 || lastSeparator <= firstSeparator + 1 || lastSeparator >= aarName.length() - 1) {
+                throw new GradleException("AAR 文件名必须为 group-artifact-version.aar")
+            }
+            String groupId = aarName.substring(0, firstSeparator)
+            String artifactId = aarName.substring(firstSeparator + 1, lastSeparator)
+            String version = aarName.substring(lastSeparator + 1)
             String sha1 = getFileSha1(item)
             String md5 = getFileMD5(item)
-            println("aar: " + aarInfo + " file sha1:" + sha1 + " md5:" + md5)
+            println("aar: " + aarName + " file sha1:" + sha1 + " md5:" + md5)
             String fromStr = item.path
-            String intoStr = aarPath + "/" + aarInfo[0].replace(".", "/") + "/" + aarInfo[1] + "/" + aarInfo[2]
-            String newName = aarInfo[1] + "-" + aarInfo[2] + ".aar"
+            String intoStr = aarPath + "/" + groupId.replace(".", "/") + "/" + artifactId + "/" + version
+            String newName = artifactId + "-" + version + ".aar"
 
             project.copy {
                 from fromStr
@@ -117,16 +107,16 @@ task useAar {
             project.file(intoStr + "/" + newName + ".sha1").write(sha1)
 
             String pomPath = intoStr + "/" + newName.substring(0, newName.length() - 4) + ".pom"
-            project.file(pomPath).write(createPomStr(aarInfo[0], aarInfo[1], aarInfo[2]))
+            project.file(pomPath).write(createPomStr(groupId, artifactId, version))
             project.file(pomPath + ".md5").write(getFileMD5(project.file(pomPath)))
             project.file(pomPath + ".sha1").write(getFileSha1(project.file(pomPath)))
 
             String metadataPath = project.file(intoStr).getParentFile().path + "/maven-metadata.xml"
-            project.file(metadataPath).write(createMetadataStr(aarInfo[0], aarInfo[1], aarInfo[2]))
+            project.file(metadataPath).write(createMetadataStr(groupId, artifactId, version))
             project.file(metadataPath + ".md5").write(getFileMD5(project.file(metadataPath)))
             project.file(metadataPath + ".sha1").write(getFileSha1(project.file(metadataPath)))
             dependencies {
-                implementation "${aarInfo[0]}:${aarInfo[1]}:${aarInfo[2]}"
+                implementation "${groupId}:${artifactId}:${version}"
             }
         }
     }

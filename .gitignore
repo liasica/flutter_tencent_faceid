@@ -28,7 +28,12 @@ migrate_working_dir/
 .dart_tool/
 build/
 replace-bundle-id.sh
-ios/Frameworks/*
-!ios/Frameworks/.gitkeep
-android/libs
-!android/libs/.gitkeep
+
+# 腾讯 SDK 受版权和分发条款限制，禁止提交到仓库
+/ios/Frameworks/*
+!/ios/Frameworks/.gitkeep
+/android/libs/*
+!/android/libs/.gitkeep
+
+# superpowers 过程文件
+.superpowers/

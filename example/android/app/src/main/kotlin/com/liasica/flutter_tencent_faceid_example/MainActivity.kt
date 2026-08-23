@@ -1,4 +1,4 @@
-package com.liasica.flutter_wb_face_example
+package com.liasica.flutter_tencent_faceid_example
 
 import io.flutter.embedding.android.FlutterActivity
 

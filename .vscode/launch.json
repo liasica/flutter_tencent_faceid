@@ -5,18 +5,18 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "flutter_wb_face",
+      "name": "flutter_tencent_faceid",
       "request": "launch",
       "type": "dart"
     },
     {
-      "name": "flutter_wb_face (profile mode)",
+      "name": "flutter_tencent_faceid (profile mode)",
       "request": "launch",
       "type": "dart",
       "flutterMode": "profile"
     },
     {
-      "name": "flutter_wb_face (release mode)",
+      "name": "flutter_tencent_faceid (release mode)",
       "request": "launch",
       "type": "dart",
       "flutterMode": "release"

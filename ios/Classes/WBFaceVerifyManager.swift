@@ -1,6 +1,6 @@
 //
 //  WBFaceVerify.swift
-//  flutter_wb_face
+//  flutter_tencent_faceid
 //
 //  Created by liasica on 2024/1/16.
 //
@@ -18,11 +18,9 @@ public class WBFaceVerifyDelegate : NSObject, WBFaceVerifyCustomerServiceDelegat
             "sign": faceVerifyResult.sign,
             "liveRate": faceVerifyResult.liveRate,
             "similarity": faceVerifyResult.similarity,
-            "userImageString": faceVerifyResult.userImageString,
             "error": faceVerifyResult.error?.description,
         ]
-        
-        print("[WBFaceVerifyDelete]", "返回结果", data)
+
         result?(data)
     }
     
@@ -59,11 +57,13 @@ public class WBFaceVerifyManager : NSObject {
             config.isIpv6 = false
             config.useAdvanceCompare = false
             config.mute = false
+            config.useWindowSecene = true
+
             // 设置bundlePath
-            config.bundlePath = config.bundlePath + "/Frameworks/flutter_wb_face.framework"
+            config.bundlePath = config.bundlePath + "/Frameworks/flutter_tencent_faceid.framework"
             
             if let faceTrackerBundleDirPath = config.faceTrackerBundleDirPath {
-                config.faceTrackerBundleDirPath = faceTrackerBundleDirPath + "/Frameworks/flutter_wb_face.framework"
+                config.faceTrackerBundleDirPath = faceTrackerBundleDirPath + "/Frameworks/flutter_tencent_faceid.framework"
             }
             
             WBFaceVerifyCustomerService.sharedInstance().initSDK(withUserId: userId,
@@ -71,7 +71,7 @@ public class WBFaceVerifyManager : NSObject {
                                                                  sign: sign,
                                                                  appid: appId,
                                                                  orderNo: orderNo,
-                                                                 apiVersion: "1.0.0",
+                                                                 apiVersion: version,
                                                                  licence: licence,
                                                                  faceId: faceId,
                                                                  sdkConfig: config) {

@@ -1,27 +1,26 @@
-name: flutter_wb_face
-description: '腾讯人脸核身，包含OCR'
-version: 0.0.1
-homepage:
+name: flutter_tencent_faceid
+description: '腾讯云人脸核身 Flutter 插件，支持身份证 OCR 与活体人脸核验。'
+version: 1.0.0
+homepage: https://github.com/liasica/flutter_tencent_faceid
+repository: https://github.com/liasica/flutter_tencent_faceid
+issue_tracker: https://github.com/liasica/flutter_tencent_faceid/issues
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
-  flutter: '>=3.3.0'
+  sdk: '>=3.9.0 <4.0.0'
+  flutter: '>=3.41.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  plugin_platform_interface: ^2.0.2
-  freezed_annotation: ^2.4.1
-  json_annotation: ^4.8.1
-  crypto: ^3.0.3
+  plugin_platform_interface: ^2.1.8
+  freezed_annotation: ^3.1.0
+  json_annotation: ^4.12.0
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  flutter_lints: ^2.0.0
-  build_runner: ^2.4.8
-  freezed: ^2.4.6
-  json_serializable: ^6.7.1
+  flutter_lints: ^6.0.0
+  build_runner: ^2.15.1
+  freezed: ^3.2.5
+  json_serializable: ^6.14.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -41,10 +40,10 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.liasica.flutter_wb_face
-        pluginClass: FlutterWbFacePlugin
+        package: com.liasica.flutter_tencent_faceid
+        pluginClass: FlutterTencentFaceIdPlugin
       ios:
-        pluginClass: FlutterWbFacePlugin
+        pluginClass: FlutterTencentFaceIdPlugin
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
