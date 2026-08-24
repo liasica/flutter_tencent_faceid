@@ -1,6 +1,6 @@
 name: flutter_tencent_faceid
 description: '腾讯云人脸核身 Flutter 插件，支持身份证 OCR 与活体人脸核验。'
-version: 1.0.0
+version: 1.1.0
 homepage: https://github.com/liasica/flutter_tencent_faceid
 repository: https://github.com/liasica/flutter_tencent_faceid
 issue_tracker: https://github.com/liasica/flutter_tencent_faceid/issues

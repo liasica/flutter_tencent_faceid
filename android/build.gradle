@@ -2,7 +2,7 @@ import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
 group 'com.liasica.flutter_tencent_faceid'
-version '1.0.0'
+version '1.1.0'
 
 buildscript {
     ext.kotlin_version = '1.7.10'
@@ -71,9 +71,109 @@ dependencies {
     // implementation fileTree(include: ['*.aar'], dir: 'libs')
 }
 
+// ===== 腾讯 SDK 自动下载 =====
+// libs/ 缺少 AAR 时，从宿主应用 pubspec.yaml 的自定义段下载 SDK zip 并解压：
+// flutter_tencent_faceid:
+//   android_sdk_url: https://example.com/tencent-faceid-sdk-android-<版本>.zip
+//   android_sdk_sha256: <可选，zip 的 SHA-256>
+// zip 布局约定见插件 README「SDK zip 打包约定」
+
+// 只解析顶层 flutter_tencent_faceid 段下一层的 `key: value`（两空格缩进、
+// 纯字符串值），避免依赖构建脚本不可用的 YAML 库
+Map readHostSdkConfig() {
+    File hostPubspec = new File(rootProject.projectDir, "../pubspec.yaml")
+    if (!hostPubspec.isFile()) {
+        return [:]
+    }
+    Map result = [:]
+    boolean inSection = false
+    hostPubspec.readLines("UTF-8").each { line ->
+        if (line ==~ /^flutter_tencent_faceid:\s*(#.*)?$/) {
+            inSection = true
+            return
+        }
+        if (!inSection) {
+            return
+        }
+        if (line =~ /^\S/) {
+            inSection = false
+            return
+        }
+        def matcher = line =~ /^\s+([A-Za-z0-9_]+):\s*(.+?)(\s+#.*)?$/
+        if (matcher) {
+            String value = matcher[0][2].trim()
+            if (value.length() >= 2 &&
+                    ((value.startsWith('"') && value.endsWith('"')) ||
+                     (value.startsWith("'") && value.endsWith("'")))) {
+                value = value.substring(1, value.length() - 1)
+            }
+            result[matcher[0][1]] = value
+        }
+    }
+    return result
+}
+
+void installTencentSdkIfMissing(File libsDir) {
+    File[] existing = libsDir.isDirectory()
+            ? libsDir.listFiles({ f -> f.name.endsWith(".aar") } as FileFilter)
+            : null
+    if (existing != null && existing.length > 0) {
+        return
+    }
+
+    Map config = readHostSdkConfig()
+    String url = config.get("android_sdk_url")?.toString()?.trim()
+    if (url == null || url.isEmpty()) {
+        // 无宿主 pubspec（独立构建插件模块）时不强制
+        if (!new File(rootProject.projectDir, "../pubspec.yaml").isFile()) {
+            return
+        }
+        throw new GradleException(
+                "flutter_tencent_faceid: android/libs 缺少腾讯 SDK AAR。" +
+                "请在应用 pubspec.yaml 顶层配置 flutter_tencent_faceid.android_sdk_url，" +
+                "或按插件 README 手工安装")
+    }
+
+    File tmpZip = new File(project.mkdir("build").absolutePath as String, "tencent-faceid-sdk-android.zip")
+    println("flutter_tencent_faceid: 下载腾讯 SDK ${url}")
+    URLConnection connection = new URL(url).openConnection()
+    connection.connectTimeout = 30000
+    connection.readTimeout = 600000
+    connection.inputStream.withCloseable { input ->
+        tmpZip.withOutputStream { it << input }
+    }
+
+    String expected = config.get("android_sdk_sha256")?.toString()?.trim()
+    if (expected) {
+        String actual = getFileSHA256(tmpZip)
+        if (!actual.equalsIgnoreCase(expected)) {
+            tmpZip.delete()
+            throw new GradleException(
+                    "flutter_tencent_faceid: SDK zip 校验失败\n  预期: ${expected}\n  实际: ${actual}")
+        }
+    }
+
+    project.mkdir(libsDir)
+    project.copy {
+        from project.zipTree(tmpZip)
+        include "**/*.aar"
+        into libsDir
+        eachFile { it.path = it.name }
+        includeEmptyDirs = false
+    }
+    tmpZip.delete()
+
+    File[] installed = libsDir.listFiles({ f -> f.name.endsWith(".aar") } as FileFilter)
+    if (installed == null || installed.length == 0) {
+        throw new GradleException("flutter_tencent_faceid: SDK zip 中未找到 AAR，请检查打包布局")
+    }
+    println("flutter_tencent_faceid: 已安装 ${installed.length} 个 AAR 到 ${libsDir}")
+}
+
 String aarPath = localMavenPath
 task useAar {
     File file = project.file("libs")
+    installTencentSdkIfMissing(file)
     if (file.exists() && file.isDirectory()) {
         file.listFiles(new FileFilter() {
             @Override
@@ -168,6 +268,44 @@ public static String getFileSha1(File file) {
             }
         }
         return sha1;
+    }
+    catch (IOException e) {
+        System.out.println(e);
+    }
+    catch (NoSuchAlgorithmException e) {
+        System.out.println(e);
+    }
+    finally {
+        try {
+            if (input != null) {
+                input.close();
+            }
+        }
+        catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+}
+
+public static String getFileSHA256(File file) {
+    FileInputStream input = null;
+    try {
+        input = new FileInputStream(file);
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] buffer = new byte[1024 * 1024 * 10];
+
+        int len = 0;
+        while ((len = input.read(buffer)) > 0) {
+            digest.update(buffer, 0, len);
+        }
+        String sha256 = new BigInteger(1, digest.digest()).toString(16);
+        int length = 64 - sha256.length();
+        if (length > 0) {
+            for (int i = 0; i < length; i++) {
+                sha256 = "0" + sha256;
+            }
+        }
+        return sha256;
     }
     catch (IOException e) {
         System.out.println(e);

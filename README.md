@@ -2,7 +2,7 @@
 
 `flutter_tencent_faceid` 是腾讯云人脸核身 Flutter 插件，封装 Android 和 iOS 的身份证 OCR 与活体人脸核验 SDK。
 
-> 版权与分发限制：腾讯 SDK、模型、Framework、AAR 和资源包不属于本仓库的开源代码。本仓库不提供、不上传、不重新分发这些文件。使用者必须通过腾讯云控制台或官方授权渠道取得 SDK，并按本文档放入本地插件目录。
+> 版权与分发限制：腾讯 SDK、模型、Framework、AAR 和资源包不属于本仓库的开源代码，本仓库不包含这些文件。使用者必须通过腾讯云控制台或官方授权渠道取得 SDK，打包为 zip 托管到自有存储后由插件在构建时自动下载安装（推荐），或按本文档手工安装到本地插件目录。
 
 ## 功能
 
@@ -11,12 +11,13 @@
 - OCR 结果字段、正反面裁剪图 Base64 数据。
 - 人脸核验成功状态、签名、活体分数、相似度和结构化错误信息。
 - 本地 AAR、XCFramework 和 Bundle 接入，不向公开仓库提交腾讯 SDK。
+- 支持在应用 `pubspec.yaml` 配置 SDK zip 地址，构建时自动下载安装并校验。
 
 ## 版本与环境
 
 | 项目 | 当前版本或要求 |
 | --- | --- |
-| 插件 | `1.0.0` |
+| 插件 | `1.1.0` |
 | Dart | `>=3.9.0 <4.0.0` |
 | Flutter | `>=3.41.0` |
 | Android 构建 JDK | `17` |
@@ -55,17 +56,69 @@ flutter pub get
 
 `ref` 可以使用分支、Tag 或完整 Commit SHA。开发期间可以使用 `master`；生产项目应固定到已验证的 Tag 或 Commit，避免远端分支变化导致依赖内容漂移。
 
-应用项目应提交 `pubspec.lock`，确保团队和 CI 使用同一个已解析 Commit。CI 中的腾讯 SDK 应从私有制品存储注入，不要放入公开源码仓库或公开构建缓存。
+应用项目应提交 `pubspec.lock`，确保团队和 CI 使用同一个已解析 Commit。
 
-腾讯 SDK 不会随 Git 仓库分发，因此仍需安装到 Flutter 下载后的插件目录。在应用根目录使用随包提供的命令取得准确路径：
+腾讯 SDK 不随 Git 仓库分发，需要另行安装到 Flutter 下载后的插件目录。推荐使用下文的自动下载安装；手工安装作为备选方式保留。
+
+## 自动下载安装（推荐）
+
+把两个 SDK zip（打包方式见「SDK zip 打包约定」）上传到团队可访问的存储（内网服务器、OSS、私有制品库等），然后在应用 `pubspec.yaml` 顶层增加自定义段：
+
+```yaml
+flutter_tencent_faceid:
+  android_sdk_url: https://example.com/sdk/tencent-faceid-sdk-android-1.1.0.zip
+  android_sdk_sha256: 6bf2aeba854b265eed5d7f97fec6cdedbe399026f95b6dfb6f75e039c7fde5e2
+  ios_sdk_url: https://example.com/sdk/tencent-faceid-sdk-ios-1.1.0.zip
+  ios_sdk_sha256: 46adda9bed51996aa1f127cfa1dc801b43140aeb01b2d6cb65a4f79eda98285b
+```
+
+行为说明：
+
+- Android 在宿主 Gradle 构建时检查插件 `android/libs/`：没有任何 AAR 且配置了 `android_sdk_url` 时，下载 zip、解压出全部 AAR 并继续构建；未配置且缺文件时构建报错并提示。
+- iOS 在每次 `pod install`（包括 `flutter build ios` 自动触发的）解析插件 Podspec 时检查 `ios/Frameworks/`：缺少 SDK 目录且配置了 `ios_sdk_url` 时，下载 zip 解压安装；未配置且缺文件时 `pod install` 报错并提示。
+- `*_sha256` 可选，配置后对下载的 zip 做 SHA-256 校验，不一致即中止；建议始终配置。
+- SDK 文件就位后不再重复下载。Git ref 变化或 Pub Cache 被清理后解析到新的插件目录，下一次构建会自动重新下载安装，无需手工处理。
+- `pub get` 本身不会触发安装：Dart pub 没有安装钩子，下载发生在首次构建时。
+
+注意该段是 pub 忽略的自定义配置，必须位于 `pubspec.yaml` 顶层（与 `dependencies` 同级），子键使用两空格缩进、值为纯字符串。Android 端按此格式做轻量解析，不支持锚点、多行字符串等复杂 YAML 写法。
+
+`pub get` 或 `pub cache clean` 后需要定位插件实际目录时（例如手工安装），可使用随包提供的命令：
 
 ```shell
 dart run flutter_tencent_faceid:sdk_path
 ```
 
-后文使用 `<PLUGIN_ROOT>` 表示该命令输出的绝对路径。Git ref 变化、Pub Cache 被清理或执行 `flutter pub cache clean` 后，插件目录可能改变，此时需要重新运行命令并安装 SDK。
+后文使用 `<PLUGIN_ROOT>` 表示该命令输出的绝对路径。
 
-## 安装腾讯 SDK
+## SDK zip 打包约定
+
+从腾讯交付件按「手工安装」两节的提取与重命名规则整理出文件后打包，zip 内不带多余目录层级：
+
+- `tencent-faceid-sdk-android-<版本>.zip`：zip 根下直接是 3 个重命名后的 AAR。
+- `tencent-faceid-sdk-ios-<版本>.zip`：zip 根下是 `PrivacyInfo.xcprivacy`、`TencentCloudHuiyanSDKFace_framework/`、`WBOCRService-framework/`。
+
+在已完成手工安装的插件目录打包的参考命令：
+
+```shell
+cd "<PLUGIN_ROOT>/android/libs" && zip -9 tencent-faceid-sdk-android-1.1.0.zip *.aar
+```
+
+```shell
+cd "<PLUGIN_ROOT>/ios/Frameworks" && zip -9 -r tencent-faceid-sdk-ios-1.1.0.zip PrivacyInfo.xcprivacy TencentCloudHuiyanSDKFace_framework WBOCRService-framework -x '*.DS_Store'
+```
+
+与当前 SDK 版本（Android 人脸 `6.6.14`、OCR `3.6.0`；iOS 人脸 `8.13.2`、OCR `5.8.2`）对应的 zip 校验值：
+
+| zip | 大小 | SHA-256 |
+| --- | --- | --- |
+| `tencent-faceid-sdk-android-1.1.0.zip` | 约 5.9MB | `6bf2aeba854b265eed5d7f97fec6cdedbe399026f95b6dfb6f75e039c7fde5e2` |
+| `tencent-faceid-sdk-ios-1.1.0.zip` | 约 81MB | `46adda9bed51996aa1f127cfa1dc801b43140aeb01b2d6cb65a4f79eda98285b` |
+
+Android zip 解压时按文件名展平提取全部 `*.aar`；iOS zip 用系统 `unzip` 原样解压到 `ios/Frameworks/`。
+
+## 手工安装腾讯 SDK
+
+不使用自动下载时，可按本章把 SDK 手工安装到插件目录，两种方式的最终文件布局完全一致。本章的提取与重命名规则同时也是「SDK zip 打包约定」的内容来源。
 
 ### 交付件校验
 
@@ -410,12 +463,13 @@ flutter build ios --debug --no-codesign
 3. Android 人脸 SDK、WbCloudNormal 和 OCR SDK 作为一组更新，不要同时保留两个 Normal 版本。
 4. iOS 完整复制新的 XCFramework、Bundle 和隐私清单，不要混入旧版分拆 Framework。
 5. 核对并同步 Android 混淆规则、iOS 系统 Framework 依赖、最低系统版本和模拟器架构。
-6. 更新本 README 的 SDK 版本表、SHA-256、版本日志摘要与 `CHANGELOG.md`。
-7. 重新生成 Dart 代码，执行静态分析，再完成 Android 和 iOS 真机双流程验证。
+6. 按「SDK zip 打包约定」重新打包两个 zip 并上传托管，更新应用 `pubspec.yaml` 中的地址与校验值。
+7. 更新本 README 的 SDK 版本表、SHA-256、zip 校验表、版本日志摘要、`docs/tencent-sdk-changelogs/` 内的原始更新日志与 `CHANGELOG.md`。
+8. 重新生成 Dart 代码，执行静态分析，再完成 Android 和 iOS 真机双流程验证。
 
 ## SDK 版本日志摘要
 
-以下内容根据本次腾讯交付件内的更新日志提炼，用于记录升级原因和回归重点，不代替腾讯的完整发布说明。
+以下内容根据本次腾讯交付件内的更新日志提炼，用于记录升级原因和回归重点。各 SDK 的完整原始更新日志（已转为 UTF-8）随仓库存放在 [docs/tencent-sdk-changelogs/](docs/tencent-sdk-changelogs/)，升级 SDK 时同步替换。
 
 ### Android 标准人脸
 
@@ -467,6 +521,13 @@ OCR `3.6.0` 压缩包内的 Normal 版本为 `5.1.16`。本插件与人脸 SDK �
 
 ## 插件更新记录
 
+### 1.1.0 - 2026-08-24
+
+- 支持在应用 `pubspec.yaml` 顶层配置 SDK zip 地址与可选 SHA-256：Android 在宿主构建时、iOS 在 `pod install` 时检测到 SDK 缺失即自动下载安装，缺配置且缺文件时报错提示。
+- 增加「SDK zip 打包约定」，附带当前版本两个 zip 的校验值；手工安装流程保留为备选方式。
+- 附带腾讯各 SDK 的完整原始更新日志（`docs/tencent-sdk-changelogs/`，已转 UTF-8）。
+- 移除示例 iOS 工程中的开发者 Team ID，签名改由本地 Xcode 自动管理。
+
 ### 1.0.0 - 2026-08-23
 
 - 仓库和插件由 `flutter_wb_face` 整体更名为 `flutter_tencent_faceid`。
@@ -503,7 +564,7 @@ OCR `3.6.0` 压缩包内的 Normal 版本为 `5.1.16`。本插件与人脸 SDK �
 
 ### Android 提示找不到腾讯 SDK 类
 
-重新执行 `dart run flutter_tencent_faceid:sdk_path`，检查其输出目录下 `android/libs/` 的 3 个 AAR 是否齐全，并确认文件名与本文档完全一致。修改文件名后需要执行 `flutter clean`，避免使用旧的本地 Maven 构建目录。
+优先检查构建日志中 `flutter_tencent_faceid:` 前缀的下载与报错信息。使用手工安装时，执行 `dart run flutter_tencent_faceid:sdk_path`，检查其输出目录下 `android/libs/` 的 3 个 AAR 是否齐全、文件名与本文档一致。调整后执行 `flutter clean`，避免使用旧的本地 Maven 构建目录。
 
 ### Android OCR 或人脸核验登录失败
 
@@ -523,7 +584,7 @@ iOS OCR `5.8.2` 未提供 `arm64` 模拟器切片。请使用 `x86_64` 模拟器
 
 ### 更新 Git ref 或清理 Pub Cache 后 SDK 再次缺失
 
-Git ref 变化或 Pub Cache 被清理后，Flutter 会解析到新的插件目录。重新执行 `flutter pub get` 和 `dart run flutter_tencent_faceid:sdk_path`，再按本文档把腾讯 SDK 安装到新输出的目录；iOS 随后还需要重新执行 `pod install`。
+Git ref 变化或 Pub Cache 被清理后，Flutter 会解析到新的插件目录。配置了自动下载安装时无需手工处理：Android 在下一次构建、iOS 在下一次 `pod install` 时自动重新下载安装。使用手工安装时，重新执行 `flutter pub get` 和 `dart run flutter_tencent_faceid:sdk_path`，再按本文档把腾讯 SDK 安装到新输出的目录；iOS 随后还需要重新执行 `pod install`。
 
 ### SDK 文件出现在 `git status`
 

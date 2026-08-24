@@ -2,9 +2,71 @@
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html.
 # Run `pod lib lint flutter_tencent_faceid.podspec` to validate before publishing.
 #
+require 'digest'
+require 'yaml'
+
+# ===== 腾讯 SDK 自动下载 =====
+# ios/Frameworks 缺少腾讯 SDK 时，pod install 解析本文件会从宿主应用
+# pubspec.yaml 的自定义段下载 SDK zip 并解压：
+# flutter_tencent_faceid:
+#   ios_sdk_url: https://example.com/tencent-faceid-sdk-ios-<版本>.zip
+#   ios_sdk_sha256: <可选，zip 的 SHA-256>
+# zip 布局约定见插件 README「SDK zip 打包约定」
+frameworks_dir = File.expand_path('Frameworks', File.dirname(__FILE__))
+face_sdk_dir = File.join(frameworks_dir, 'TencentCloudHuiyanSDKFace_framework')
+ocr_sdk_dir = File.join(frameworks_dir, 'WBOCRService-framework')
+
+unless Dir.exist?(face_sdk_dir) && Dir.exist?(ocr_sdk_dir)
+  sdk_config = {}
+  if defined?(Pod::Config)
+    host_pubspec = File.expand_path('../pubspec.yaml', Pod::Config.instance.installation_root.to_s)
+    if File.file?(host_pubspec)
+      parsed = begin
+        YAML.safe_load(File.read(host_pubspec))
+      rescue StandardError
+        nil
+      end
+      section = parsed.is_a?(Hash) ? parsed['flutter_tencent_faceid'] : nil
+      sdk_config = section if section.is_a?(Hash)
+    end
+  end
+
+  sdk_url = sdk_config['ios_sdk_url'].to_s.strip
+  if sdk_url.empty?
+    raise 'flutter_tencent_faceid: ios/Frameworks 缺少腾讯 SDK。' \
+          '请在应用 pubspec.yaml 顶层配置 flutter_tencent_faceid.ios_sdk_url，' \
+          '或按插件 README 手工安装后重新执行 pod install'
+  end
+
+  require 'open-uri'
+  require 'tempfile'
+  puts "flutter_tencent_faceid: 下载腾讯 SDK #{sdk_url}"
+  Tempfile.create(['tencent-faceid-sdk-ios', '.zip']) do |tmp|
+    tmp.binmode
+    URI.parse(sdk_url).open('rb', read_timeout: 600) { |remote| IO.copy_stream(remote, tmp) }
+    tmp.flush
+
+    expected = sdk_config['ios_sdk_sha256'].to_s.strip
+    unless expected.empty?
+      actual = Digest::SHA256.file(tmp.path).hexdigest
+      unless actual.casecmp?(expected)
+        raise "flutter_tencent_faceid: SDK zip 校验失败\n  预期: #{expected}\n  实际: #{actual}"
+      end
+    end
+
+    system('unzip', '-q', '-o', tmp.path, '-d', frameworks_dir) or
+      raise 'flutter_tencent_faceid: 解压腾讯 SDK 失败'
+  end
+
+  unless Dir.exist?(face_sdk_dir) && Dir.exist?(ocr_sdk_dir)
+    raise 'flutter_tencent_faceid: 解压后仍缺少 SDK 目录，请检查 zip 打包布局'
+  end
+  puts "flutter_tencent_faceid: 腾讯 SDK 已安装到 #{frameworks_dir}"
+end
+
 Pod::Spec.new do |s|
   s.name             = 'flutter_tencent_faceid'
-  s.version          = '1.0.0'
+  s.version          = '1.1.0'
   s.summary          = '腾讯云人脸核身 Flutter 插件，支持身份证 OCR 与活体人脸核验'
   s.description      = <<-DESC
   腾讯云人脸核身 Flutter 插件，支持身份证 OCR 与活体人脸核验。
