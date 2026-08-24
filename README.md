@@ -11,7 +11,7 @@
 - OCR 结果字段、正反面裁剪图 Base64 数据。
 - 人脸核验成功状态、签名、活体分数、相似度和结构化错误信息。
 - 本地 AAR、XCFramework 和 Bundle 接入，不向公开仓库提交腾讯 SDK。
-- 支持在应用 `pubspec.yaml` 配置 SDK zip 地址，构建时自动下载安装并校验。
+- 支持在应用 `pubspec.yaml` 配置 SDK zip 的 URL 或本地路径，构建时自动安装并校验。
 
 ## 版本与环境
 
@@ -62,7 +62,7 @@ flutter pub get
 
 ## 自动下载安装（推荐）
 
-把两个 SDK zip（打包方式见「SDK zip 打包约定」）上传到团队可访问的存储（内网服务器、OSS、私有制品库等），然后在应用 `pubspec.yaml` 顶层增加自定义段：
+把两个 SDK zip（打包方式见「SDK zip 打包约定」）放到构建机可访问的位置——上传到内网服务器、OSS、私有制品库，或直接放进应用的私有仓库——然后在应用 `pubspec.yaml` 顶层增加自定义段：
 
 ```yaml
 flutter_tencent_faceid:
@@ -72,12 +72,23 @@ flutter_tencent_faceid:
   ios_sdk_sha256: 46adda9bed51996aa1f127cfa1dc801b43140aeb01b2d6cb65a4f79eda98285b
 ```
 
+`*_sdk_url` 也接受本地路径：`http://` 或 `https://` 开头按 URL 下载，其余一律按 zip 文件路径处理——绝对路径原样使用，相对路径以应用根目录（`pubspec.yaml` 所在目录）为基准。适合把 zip 提交到应用的私有仓库随代码分发：
+
+```yaml
+flutter_tencent_faceid:
+  android_sdk_url: vendor/tencent-faceid-sdk-android-1.1.0.zip
+  android_sdk_sha256: 6bf2aeba854b265eed5d7f97fec6cdedbe399026f95b6dfb6f75e039c7fde5e2
+  ios_sdk_url: vendor/tencent-faceid-sdk-ios-1.1.0.zip
+  ios_sdk_sha256: 46adda9bed51996aa1f127cfa1dc801b43140aeb01b2d6cb65a4f79eda98285b
+```
+
 行为说明：
 
 - Android 在宿主 Gradle 构建时检查插件 `android/libs/`：没有任何 AAR 且配置了 `android_sdk_url` 时，下载 zip、解压出全部 AAR 并继续构建；未配置且缺文件时构建报错并提示。
 - iOS 在每次 `pod install`（包括 `flutter build ios` 自动触发的）解析插件 Podspec 时检查 `ios/Frameworks/`：缺少 SDK 目录且配置了 `ios_sdk_url` 时，下载 zip 解压安装；未配置且缺文件时 `pod install` 报错并提示。
-- `*_sha256` 可选，配置后对下载的 zip 做 SHA-256 校验，不一致即中止；建议始终配置。
-- SDK 文件就位后不再重复下载。Git ref 变化或 Pub Cache 被清理后解析到新的插件目录，下一次构建会自动重新下载安装，无需手工处理。
+- `*_sha256` 可选，配置后对 zip（无论下载还是本地）做 SHA-256 校验，不一致即中止；建议始终配置。
+- 使用本地路径时 zip 源文件不会被修改或删除；下载模式的临时文件在安装后清理。
+- SDK 文件就位后不再重复下载。Git ref 变化或 Pub Cache 被清理后解析到新的插件目录，下一次构建会自动重新安装，无需手工处理。
 - `pub get` 本身不会触发安装：Dart pub 没有安装钩子，下载发生在首次构建时。
 
 注意该段是 pub 忽略的自定义配置，必须位于 `pubspec.yaml` 顶层（与 `dependencies` 同级），子键使用两空格缩进、值为纯字符串。Android 端按此格式做轻量解析，不支持锚点、多行字符串等复杂 YAML 写法。
@@ -523,7 +534,7 @@ OCR `3.6.0` 压缩包内的 Normal 版本为 `5.1.16`。本插件与人脸 SDK �
 
 ### 1.1.0 - 2026-08-24
 
-- 支持在应用 `pubspec.yaml` 顶层配置 SDK zip 地址与可选 SHA-256：Android 在宿主构建时、iOS 在 `pod install` 时检测到 SDK 缺失即自动下载安装，缺配置且缺文件时报错提示。
+- 支持在应用 `pubspec.yaml` 顶层配置 SDK zip 的 URL 或本地路径与可选 SHA-256：Android 在宿主构建时、iOS 在 `pod install` 时检测到 SDK 缺失即自动安装，缺配置且缺文件时报错提示。
 - 增加「SDK zip 打包约定」，附带当前版本两个 zip 的校验值；手工安装流程保留为备选方式。
 - 附带腾讯各 SDK 的完整原始更新日志（`docs/tencent-sdk-changelogs/`，已转 UTF-8）。
 - 移除示例 iOS 工程中的开发者 Team ID，签名改由本地 Xcode 自动管理。

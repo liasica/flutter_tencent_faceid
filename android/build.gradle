@@ -122,8 +122,8 @@ void installTencentSdkIfMissing(File libsDir) {
     }
 
     Map config = readHostSdkConfig()
-    String url = config.get("android_sdk_url")?.toString()?.trim()
-    if (url == null || url.isEmpty()) {
+    String source = config.get("android_sdk_url")?.toString()?.trim()
+    if (source == null || source.isEmpty()) {
         // 无宿主 pubspec（独立构建插件模块）时不强制
         if (!new File(rootProject.projectDir, "../pubspec.yaml").isFile()) {
             return
@@ -134,20 +134,37 @@ void installTencentSdkIfMissing(File libsDir) {
                 "或按插件 README 手工安装")
     }
 
-    File tmpZip = new File(project.mkdir("build").absolutePath as String, "tencent-faceid-sdk-android.zip")
-    println("flutter_tencent_faceid: 下载腾讯 SDK ${url}")
-    URLConnection connection = new URL(url).openConnection()
-    connection.connectTimeout = 30000
-    connection.readTimeout = 600000
-    connection.inputStream.withCloseable { input ->
-        tmpZip.withOutputStream { it << input }
+    // http(s) 地址下载到临时文件；其余按本地路径处理，相对路径以应用根目录为基准
+    File zipFile
+    boolean downloaded = false
+    if (source ==~ /^https?:\/\/.*/) {
+        zipFile = new File(project.mkdir("build").absolutePath as String, "tencent-faceid-sdk-android.zip")
+        downloaded = true
+        println("flutter_tencent_faceid: 下载腾讯 SDK ${source}")
+        URLConnection connection = new URL(source).openConnection()
+        connection.connectTimeout = 30000
+        connection.readTimeout = 600000
+        connection.inputStream.withCloseable { input ->
+            zipFile.withOutputStream { it << input }
+        }
+    } else {
+        zipFile = new File(source)
+        if (!zipFile.isAbsolute()) {
+            zipFile = new File(rootProject.projectDir.parentFile, source)
+        }
+        if (!zipFile.isFile()) {
+            throw new GradleException("flutter_tencent_faceid: 本地 SDK zip 不存在: ${zipFile.absolutePath}")
+        }
+        println("flutter_tencent_faceid: 使用本地腾讯 SDK ${zipFile.absolutePath}")
     }
 
     String expected = config.get("android_sdk_sha256")?.toString()?.trim()
     if (expected) {
-        String actual = getFileSHA256(tmpZip)
+        String actual = getFileSHA256(zipFile)
         if (!actual.equalsIgnoreCase(expected)) {
-            tmpZip.delete()
+            if (downloaded) {
+                zipFile.delete()
+            }
             throw new GradleException(
                     "flutter_tencent_faceid: SDK zip 校验失败\n  预期: ${expected}\n  实际: ${actual}")
         }
@@ -155,13 +172,15 @@ void installTencentSdkIfMissing(File libsDir) {
 
     project.mkdir(libsDir)
     project.copy {
-        from project.zipTree(tmpZip)
+        from project.zipTree(zipFile)
         include "**/*.aar"
         into libsDir
         eachFile { it.path = it.name }
         includeEmptyDirs = false
     }
-    tmpZip.delete()
+    if (downloaded) {
+        zipFile.delete()
+    }
 
     File[] installed = libsDir.listFiles({ f -> f.name.endsWith(".aar") } as FileFilter)
     if (installed == null || installed.length == 0) {

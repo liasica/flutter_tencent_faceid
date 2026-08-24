@@ -18,8 +18,10 @@ ocr_sdk_dir = File.join(frameworks_dir, 'WBOCRService-framework')
 
 unless Dir.exist?(face_sdk_dir) && Dir.exist?(ocr_sdk_dir)
   sdk_config = {}
+  host_root = nil
   if defined?(Pod::Config)
-    host_pubspec = File.expand_path('../pubspec.yaml', Pod::Config.instance.installation_root.to_s)
+    host_root = File.expand_path('..', Pod::Config.instance.installation_root.to_s)
+    host_pubspec = File.join(host_root, 'pubspec.yaml')
     if File.file?(host_pubspec)
       parsed = begin
         YAML.safe_load(File.read(host_pubspec))
@@ -31,31 +33,41 @@ unless Dir.exist?(face_sdk_dir) && Dir.exist?(ocr_sdk_dir)
     end
   end
 
-  sdk_url = sdk_config['ios_sdk_url'].to_s.strip
-  if sdk_url.empty?
+  sdk_source = sdk_config['ios_sdk_url'].to_s.strip
+  if sdk_source.empty?
     raise 'flutter_tencent_faceid: ios/Frameworks 缺少腾讯 SDK。' \
           '请在应用 pubspec.yaml 顶层配置 flutter_tencent_faceid.ios_sdk_url，' \
           '或按插件 README 手工安装后重新执行 pod install'
   end
 
-  require 'open-uri'
-  require 'tempfile'
-  puts "flutter_tencent_faceid: 下载腾讯 SDK #{sdk_url}"
-  Tempfile.create(['tencent-faceid-sdk-ios', '.zip']) do |tmp|
-    tmp.binmode
-    URI.parse(sdk_url).open('rb', read_timeout: 600) { |remote| IO.copy_stream(remote, tmp) }
-    tmp.flush
-
-    expected = sdk_config['ios_sdk_sha256'].to_s.strip
+  expected = sdk_config['ios_sdk_sha256'].to_s.strip
+  install_zip = lambda do |zip_path|
     unless expected.empty?
-      actual = Digest::SHA256.file(tmp.path).hexdigest
+      actual = Digest::SHA256.file(zip_path).hexdigest
       unless actual.casecmp?(expected)
         raise "flutter_tencent_faceid: SDK zip 校验失败\n  预期: #{expected}\n  实际: #{actual}"
       end
     end
-
-    system('unzip', '-q', '-o', tmp.path, '-d', frameworks_dir) or
+    system('unzip', '-q', '-o', zip_path, '-d', frameworks_dir) or
       raise 'flutter_tencent_faceid: 解压腾讯 SDK 失败'
+  end
+
+  if sdk_source =~ %r{\Ahttps?://}
+    require 'open-uri'
+    require 'tempfile'
+    puts "flutter_tencent_faceid: 下载腾讯 SDK #{sdk_source}"
+    Tempfile.create(['tencent-faceid-sdk-ios', '.zip']) do |tmp|
+      tmp.binmode
+      URI.parse(sdk_source).open('rb', read_timeout: 600) { |remote| IO.copy_stream(remote, tmp) }
+      tmp.flush
+      install_zip.call(tmp.path)
+    end
+  else
+    # 本地路径：绝对路径原样使用，相对路径以应用根目录为基准
+    zip_path = File.expand_path(sdk_source, host_root || Dir.pwd)
+    raise "flutter_tencent_faceid: 本地 SDK zip 不存在: #{zip_path}" unless File.file?(zip_path)
+    puts "flutter_tencent_faceid: 使用本地腾讯 SDK #{zip_path}"
+    install_zip.call(zip_path)
   end
 
   unless Dir.exist?(face_sdk_dir) && Dir.exist?(ocr_sdk_dir)
