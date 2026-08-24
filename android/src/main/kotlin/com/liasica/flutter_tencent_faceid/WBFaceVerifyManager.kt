@@ -22,7 +22,7 @@ class WBFaceVerifyManager {
                     val nonce = arguments["nonce"] as? String
                     val sign = arguments["sign"] as? String
                     val orderNo = arguments["orderNo"] as? String
-                    val licence = arguments["licence"] as? String
+                    val license = arguments["licence"] as? String
                     val version = arguments["version"] as? String
                     val faceId = arguments["faceId"] as? String
                     val optimalDomain = arguments["optimalDomain"] as? String
@@ -37,7 +37,7 @@ class WBFaceVerifyManager {
                         userId,
                         sign,
                         FaceVerifyStatus.Mode.GRADE,
-                        licence,
+                        license,
                     )
                     inputData.optimalDomain = optimalDomain
 

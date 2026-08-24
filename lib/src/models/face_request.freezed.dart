@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$FaceVerifyRequest {
 
- String get appId; String get faceId;@JsonKey(name: 'licence') String get license; String get nonce; String get optimalDomain; String get orderNo; String get sign; String get userId;@JsonKey(name: 'version') String get apiVersion;
+ String get appId; String get faceId; String get license; String get nonce; String get optimalDomain; String get orderNo; String get sign; String get userId;@JsonKey(name: 'version') String get apiVersion;
 /// Create a copy of FaceVerifyRequest
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -44,7 +44,7 @@ abstract mixin class $FaceVerifyRequestCopyWith<$Res>  {
   factory $FaceVerifyRequestCopyWith(FaceVerifyRequest value, $Res Function(FaceVerifyRequest) _then) = _$FaceVerifyRequestCopyWithImpl;
 @useResult
 $Res call({
- String appId, String faceId,@JsonKey(name: 'licence') String license, String nonce, String optimalDomain, String orderNo, String sign, String userId,@JsonKey(name: 'version') String apiVersion
+ String appId, String faceId, String license, String nonce, String optimalDomain, String orderNo, String sign, String userId,@JsonKey(name: 'version') String apiVersion
 });
 
 
@@ -157,7 +157,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String appId,  String faceId, @JsonKey(name: 'licence')  String license,  String nonce,  String optimalDomain,  String orderNo,  String sign,  String userId, @JsonKey(name: 'version')  String apiVersion)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String appId,  String faceId,  String license,  String nonce,  String optimalDomain,  String orderNo,  String sign,  String userId, @JsonKey(name: 'version')  String apiVersion)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _FaceVerifyRequest() when $default != null:
 return $default(_that.appId,_that.faceId,_that.license,_that.nonce,_that.optimalDomain,_that.orderNo,_that.sign,_that.userId,_that.apiVersion);case _:
@@ -178,7 +178,7 @@ return $default(_that.appId,_that.faceId,_that.license,_that.nonce,_that.optimal
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String appId,  String faceId, @JsonKey(name: 'licence')  String license,  String nonce,  String optimalDomain,  String orderNo,  String sign,  String userId, @JsonKey(name: 'version')  String apiVersion)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String appId,  String faceId,  String license,  String nonce,  String optimalDomain,  String orderNo,  String sign,  String userId, @JsonKey(name: 'version')  String apiVersion)  $default,) {final _that = this;
 switch (_that) {
 case _FaceVerifyRequest():
 return $default(_that.appId,_that.faceId,_that.license,_that.nonce,_that.optimalDomain,_that.orderNo,_that.sign,_that.userId,_that.apiVersion);case _:
@@ -198,7 +198,7 @@ return $default(_that.appId,_that.faceId,_that.license,_that.nonce,_that.optimal
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String appId,  String faceId, @JsonKey(name: 'licence')  String license,  String nonce,  String optimalDomain,  String orderNo,  String sign,  String userId, @JsonKey(name: 'version')  String apiVersion)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String appId,  String faceId,  String license,  String nonce,  String optimalDomain,  String orderNo,  String sign,  String userId, @JsonKey(name: 'version')  String apiVersion)?  $default,) {final _that = this;
 switch (_that) {
 case _FaceVerifyRequest() when $default != null:
 return $default(_that.appId,_that.faceId,_that.license,_that.nonce,_that.optimalDomain,_that.orderNo,_that.sign,_that.userId,_that.apiVersion);case _:
@@ -213,12 +213,12 @@ return $default(_that.appId,_that.faceId,_that.license,_that.nonce,_that.optimal
 @JsonSerializable()
 
 class _FaceVerifyRequest implements FaceVerifyRequest {
-  const _FaceVerifyRequest({required this.appId, required this.faceId, @JsonKey(name: 'licence') required this.license, required this.nonce, required this.optimalDomain, required this.orderNo, required this.sign, required this.userId, @JsonKey(name: 'version') required this.apiVersion});
+  const _FaceVerifyRequest({required this.appId, required this.faceId, required this.license, required this.nonce, required this.optimalDomain, required this.orderNo, required this.sign, required this.userId, @JsonKey(name: 'version') required this.apiVersion});
   factory _FaceVerifyRequest.fromJson(Map<String, dynamic> json) => _$FaceVerifyRequestFromJson(json);
 
 @override final  String appId;
 @override final  String faceId;
-@override@JsonKey(name: 'licence') final  String license;
+@override final  String license;
 @override final  String nonce;
 @override final  String optimalDomain;
 @override final  String orderNo;
@@ -255,7 +255,7 @@ abstract mixin class _$FaceVerifyRequestCopyWith<$Res> implements $FaceVerifyReq
   factory _$FaceVerifyRequestCopyWith(_FaceVerifyRequest value, $Res Function(_FaceVerifyRequest) _then) = __$FaceVerifyRequestCopyWithImpl;
 @override @useResult
 $Res call({
- String appId, String faceId,@JsonKey(name: 'licence') String license, String nonce, String optimalDomain, String orderNo, String sign, String userId,@JsonKey(name: 'version') String apiVersion
+ String appId, String faceId, String license, String nonce, String optimalDomain, String orderNo, String sign, String userId,@JsonKey(name: 'version') String apiVersion
 });
 
 

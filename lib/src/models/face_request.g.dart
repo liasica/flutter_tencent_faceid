@@ -10,7 +10,7 @@ _FaceVerifyRequest _$FaceVerifyRequestFromJson(Map<String, dynamic> json) =>
     _FaceVerifyRequest(
       appId: json['appId'] as String,
       faceId: json['faceId'] as String,
-      license: json['licence'] as String,
+      license: json['license'] as String,
       nonce: json['nonce'] as String,
       optimalDomain: json['optimalDomain'] as String,
       orderNo: json['orderNo'] as String,
@@ -23,7 +23,7 @@ Map<String, dynamic> _$FaceVerifyRequestToJson(_FaceVerifyRequest instance) =>
     <String, dynamic>{
       'appId': instance.appId,
       'faceId': instance.faceId,
-      'licence': instance.license,
+      'license': instance.license,
       'nonce': instance.nonce,
       'optimalDomain': instance.optimalDomain,
       'orderNo': instance.orderNo,

@@ -63,7 +63,7 @@ public class FlutterTencentFaceIdPlugin: NSObject, FlutterPlugin {
            let nonce = args["nonce"] as? String,
            let sign = args["sign"] as? String,
            let orderNo = args["orderNo"] as? String,
-           let licence = args["licence"] as? String,
+           let license = args["licence"] as? String,
            let version = args["version"] as? String,
            let faceId = args["faceId"] as? String,
            let optimalDomain = args["optimalDomain"] as? String {
@@ -73,7 +73,7 @@ public class FlutterTencentFaceIdPlugin: NSObject, FlutterPlugin {
                 sign: sign,
                 appId: appId,
                 orderNo: orderNo,
-                licence: licence,
+                license: license,
                 version: version,
                 faceId: faceId,
                 optimalDomain: optimalDomain

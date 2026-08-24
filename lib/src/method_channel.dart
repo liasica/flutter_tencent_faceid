@@ -23,9 +23,12 @@ class MethodChannelFaceId extends FaceIdPlatform {
 
   @override
   Future<FaceVerifyResult?> verify(FaceVerifyRequest request) async {
+    final Map<String, dynamic> arguments = request.toJson();
+    arguments['licence'] = arguments.remove('license');
+
     final result = await methodChannel.invokeMapMethod<String, dynamic>(
       'face',
-      request.toJson(),
+      arguments,
     );
     return result == null ? null : FaceVerifyResult.fromJson(result);
   }

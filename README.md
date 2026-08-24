@@ -251,7 +251,7 @@ OCR 参数：
 | --- | --- | --- |
 | `appId` | `String` | 腾讯云人脸核身控制台的 `WBappid` |
 | `faceId` | `String` | 后端上传身份信息后获得的 `faceId`；具体要求取决于接入模式 |
-| `licence` | `String` | 腾讯云控制台颁发的 SDK License |
+| `license` | `String` | 腾讯云控制台颁发的 SDK License |
 | `nonce` | `String` | 本次请求的随机字符串 |
 | `optimalDomain` | `String` | 后端获取 `faceId` 时返回的最优接入域名，必须原样传给 SDK |
 | `orderNo` | `String` | 本次人脸核验订单号 |
@@ -315,7 +315,7 @@ Future<FaceVerifyResult?> startFaceVerify() async {
 }
 ```
 
-后端 JSON 中继续传入腾讯接口使用的 `licence` 和 `version`，并传入创建 `faceId` 时取得的 `optimalDomain`。`FaceVerifyRequest.fromJson` 会将 `licence` 和 `version` 分别映射为 Dart 属性 `license` 和 `apiVersion`；`toJson()` 会恢复腾讯原始 key，因此不影响原生 SDK 参数。
+后端 JSON 和 Dart 模型统一使用 `license`，同时传入创建 `faceId` 时取得的 `optimalDomain`。插件只在 Method Channel 与腾讯原生 SDK 的边界把 `license` 转换为腾讯接口使用的 `licence`；业务后端和 Flutter 调用方不需要感知该历史拼写。
 
 `FaceVerifyResult` 包含：
 

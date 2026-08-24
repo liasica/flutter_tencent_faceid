@@ -19,7 +19,7 @@ abstract class FaceVerifyRequest with _$FaceVerifyRequest {
   const factory FaceVerifyRequest({
     required String appId,
     required String faceId,
-    @JsonKey(name: 'licence') required String license,
+    required String license,
     required String nonce,
     required String optimalDomain,
     required String orderNo,

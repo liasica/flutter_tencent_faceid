@@ -51,7 +51,7 @@ public class WBFaceVerifyManager : NSObject {
                       sign: String,
                       appId: String,
                       orderNo: String,
-                      licence: String,
+                      license: String,
                       version: String,
                       faceId: String,
                       optimalDomain: String
@@ -79,7 +79,7 @@ public class WBFaceVerifyManager : NSObject {
                                                                  appid: appId,
                                                                  orderNo: orderNo,
                                                                  apiVersion: version,
-                                                                 licence: licence,
+                                                                 licence: license,
                                                                  faceId: faceId,
                                                                  sdkConfig: config) {
                 

@@ -16,6 +16,6 @@ Android 运行前需要授予相机权限。iOS 需要先在 `ios/` 目录执行
 ## 参数
 
 - OCR JSON 需要包含 `appId`、`userId`、`orderNo`、`version`、`nonce` 和 `sign`。
-- 人脸核验 JSON 需要包含 `appId`、`faceId`、`licence`、`nonce`、`orderNo`、`sign`、`userId` 和 `version`。
+- 人脸核验 JSON 需要包含 `appId`、`faceId`、`license`、`nonce`、`orderNo`、`sign`、`userId` 和 `version`。
 
 以上参数必须由业务后端为本次请求临时生成。示例会隐藏 OCR 图片的 Base64 正文，只显示长度，避免将完整身份证图片展示或复制到日志中。
