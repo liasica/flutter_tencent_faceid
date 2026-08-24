@@ -62,14 +62,14 @@ flutter pub get
 
 ## 自动下载安装（推荐）
 
-把两个 SDK zip（打包方式见「SDK zip 打包约定」）放到构建机可访问的位置——上传到内网服务器、OSS、私有制品库，或直接放进应用的私有仓库——然后在应用 `pubspec.yaml` 顶层增加自定义段：
+把两个 SDK zip（用 `tool/package_sdk.sh` 从腾讯交付件打包，见「SDK zip 打包」）放到构建机可访问的位置——上传到内网服务器、OSS、私有制品库，或直接放进应用的私有仓库——然后在应用 `pubspec.yaml` 顶层增加自定义段：
 
 ```yaml
 flutter_tencent_faceid:
   android_sdk_url: https://example.com/sdk/tencent-faceid-sdk-android-1.1.0.zip
-  android_sdk_sha256: 6bf2aeba854b265eed5d7f97fec6cdedbe399026f95b6dfb6f75e039c7fde5e2
+  android_sdk_sha256: 60fb476e89c2600e9dc8e001a3a8d7b9ee3ae47dd0c7995ae73817863215414a
   ios_sdk_url: https://example.com/sdk/tencent-faceid-sdk-ios-1.1.0.zip
-  ios_sdk_sha256: 46adda9bed51996aa1f127cfa1dc801b43140aeb01b2d6cb65a4f79eda98285b
+  ios_sdk_sha256: 64f253fa17941810d09db2eadf37608208b9fa17778594c596113e73a9940529
 ```
 
 `*_sdk_url` 也接受本地路径：`http://` 或 `https://` 开头按 URL 下载，其余一律按 zip 文件路径处理——绝对路径原样使用，相对路径以应用根目录（`pubspec.yaml` 所在目录）为基准。适合把 zip 提交到应用的私有仓库随代码分发：
@@ -77,9 +77,9 @@ flutter_tencent_faceid:
 ```yaml
 flutter_tencent_faceid:
   android_sdk_url: vendor/tencent-faceid-sdk-android-1.1.0.zip
-  android_sdk_sha256: 6bf2aeba854b265eed5d7f97fec6cdedbe399026f95b6dfb6f75e039c7fde5e2
+  android_sdk_sha256: 60fb476e89c2600e9dc8e001a3a8d7b9ee3ae47dd0c7995ae73817863215414a
   ios_sdk_url: vendor/tencent-faceid-sdk-ios-1.1.0.zip
-  ios_sdk_sha256: 46adda9bed51996aa1f127cfa1dc801b43140aeb01b2d6cb65a4f79eda98285b
+  ios_sdk_sha256: 64f253fa17941810d09db2eadf37608208b9fa17778594c596113e73a9940529
 ```
 
 行为说明：
@@ -101,39 +101,42 @@ dart run flutter_tencent_faceid:sdk_path
 
 后文使用 `<PLUGIN_ROOT>` 表示该命令输出的绝对路径。
 
-## SDK zip 打包约定
+## SDK zip 打包
 
-从腾讯交付件按「手工安装」两节的提取与重命名规则整理出文件后打包，zip 内不带多余目录层级：
+使用仓库自带脚本从腾讯原始交付件目录一键打包（macOS，需要系统 `zip`、`unzip`）：
+
+```shell
+tool/package_sdk.sh <腾讯交付件目录>
+```
+
+脚本按文件名模式在目录中递归定位 Android/iOS 人脸与 OCR 共 4 个原始压缩包（`Android-人脸核身-v*.zip`、`Android-OCR-v*.zip`、`iOS-人脸核身-v*.zip`、`iOS_OCR_SDK_V*.zip`，版本号自动识别），完成提取、重命名与打包，输出：
+
+- 交付件清单：4 个原始 zip 的文件名、SDK 版本与 SHA-256（用于更新下文「交付件校验」表）。
+- 两个产物 zip 及其 SHA-256，并给出可直接粘贴到应用 `pubspec.yaml` 的配置示例。
+
+产物默认写入 `<腾讯交付件目录>/插件打包/`，可用 `-o` 指定输出目录、`-v` 覆盖产物文件名中的插件版本号。打包过程可复现：同一份交付件重复打包得到相同的 SHA-256。
+
+zip 布局约定（与「手工安装」两节的提取与重命名规则一致，zip 内不带多余目录层级）：
 
 - `tencent-faceid-sdk-android-<版本>.zip`：zip 根下直接是 3 个重命名后的 AAR。
 - `tencent-faceid-sdk-ios-<版本>.zip`：zip 根下是 `PrivacyInfo.xcprivacy`、`TencentCloudHuiyanSDKFace_framework/`、`WBOCRService-framework/`。
-
-在已完成手工安装的插件目录打包的参考命令：
-
-```shell
-cd "<PLUGIN_ROOT>/android/libs" && zip -9 tencent-faceid-sdk-android-1.1.0.zip *.aar
-```
-
-```shell
-cd "<PLUGIN_ROOT>/ios/Frameworks" && zip -9 -r tencent-faceid-sdk-ios-1.1.0.zip PrivacyInfo.xcprivacy TencentCloudHuiyanSDKFace_framework WBOCRService-framework -x '*.DS_Store'
-```
 
 与当前 SDK 版本（Android 人脸 `6.6.14`、OCR `3.6.0`；iOS 人脸 `8.13.2`、OCR `5.8.2`）对应的 zip 校验值：
 
 | zip | 大小 | SHA-256 |
 | --- | --- | --- |
-| `tencent-faceid-sdk-android-1.1.0.zip` | 约 5.9MB | `6bf2aeba854b265eed5d7f97fec6cdedbe399026f95b6dfb6f75e039c7fde5e2` |
-| `tencent-faceid-sdk-ios-1.1.0.zip` | 约 81MB | `46adda9bed51996aa1f127cfa1dc801b43140aeb01b2d6cb65a4f79eda98285b` |
+| `tencent-faceid-sdk-android-1.1.0.zip` | 约 5.9MB | `60fb476e89c2600e9dc8e001a3a8d7b9ee3ae47dd0c7995ae73817863215414a` |
+| `tencent-faceid-sdk-ios-1.1.0.zip` | 约 81MB | `64f253fa17941810d09db2eadf37608208b9fa17778594c596113e73a9940529` |
 
 Android zip 解压时按文件名展平提取全部 `*.aar`；iOS zip 用系统 `unzip` 原样解压到 `ios/Frameworks/`。
 
 ## 手工安装腾讯 SDK
 
-不使用自动下载时，可按本章把 SDK 手工安装到插件目录，两种方式的最终文件布局完全一致。本章的提取与重命名规则同时也是「SDK zip 打包约定」的内容来源。
+不使用自动下载时，可按本章把 SDK 手工安装到插件目录，两种方式的最终文件布局完全一致。本章的提取与重命名规则即打包脚本 `tool/package_sdk.sh` 的实现依据。
 
 ### 交付件校验
 
-下表记录了 `1.0.0` 更新时使用的腾讯原始交付件。SHA-256 用于确认本次集成所用文件；如果腾讯重新打包同版本文件，校验值可能变化，应以官方交付信息为准。
+下表记录当前集成使用的腾讯原始交付件，内容来自 `tool/package_sdk.sh` 输出的交付件清单。SHA-256 用于确认本次集成所用文件；如果腾讯重新打包同版本文件，校验值可能变化，应以官方交付信息为准。
 
 | 平台 | 原始压缩包 | SHA-256 |
 | --- | --- | --- |
@@ -470,13 +473,11 @@ flutter build ios --debug --no-codesign
 ## SDK 升级流程
 
 1. 从腾讯云授权渠道获取新交付件，先阅读对应平台更新日志和内置 Demo。
-2. 手动移除插件目录中旧的 AAR 和 iOS SDK 目录，保留 `.gitkeep`，不要在旧目录上直接覆盖。
-3. Android 人脸 SDK、WbCloudNormal 和 OCR SDK 作为一组更新，不要同时保留两个 Normal 版本。
-4. iOS 完整复制新的 XCFramework、Bundle 和隐私清单，不要混入旧版分拆 Framework。
-5. 核对并同步 Android 混淆规则、iOS 系统 Framework 依赖、最低系统版本和模拟器架构。
-6. 按「SDK zip 打包约定」重新打包两个 zip 并上传托管，更新应用 `pubspec.yaml` 中的地址与校验值。
-7. 更新本 README 的 SDK 版本表、SHA-256、zip 校验表、版本日志摘要、`docs/tencent-sdk-changelogs/` 内的原始更新日志与 `CHANGELOG.md`。
-8. 重新生成 Dart 代码，执行静态分析，再完成 Android 和 iOS 真机双流程验证。
+2. 运行 `tool/package_sdk.sh <新交付件目录>` 重新打包（提取、重命名、Normal 版本取舍由脚本完成）；腾讯更改文件命名或包内布局导致脚本报错时，同步调整脚本内的匹配模式与提取规则。
+3. 上传新产物并更新应用 `pubspec.yaml` 中的地址与校验值；插件本地开发目录按新 zip 重新安装。
+4. 核对并同步 Android 混淆规则、iOS 系统 Framework 依赖、最低系统版本和模拟器架构，不要混入旧版分拆 Framework。
+5. 按脚本输出更新本 README 的 SDK 版本表、交付件校验表、zip 校验表、AAR 校验值、版本日志摘要、`docs/tencent-sdk-changelogs/` 内的原始更新日志与 `CHANGELOG.md`。
+6. 重新生成 Dart 代码，执行静态分析，再完成 Android 和 iOS 真机双流程验证。
 
 ## SDK 版本日志摘要
 
@@ -535,7 +536,7 @@ OCR `3.6.0` 压缩包内的 Normal 版本为 `5.1.16`。本插件与人脸 SDK �
 ### 1.1.0 - 2026-08-24
 
 - 支持在应用 `pubspec.yaml` 顶层配置 SDK zip 的 URL 或本地路径与可选 SHA-256：Android 在宿主构建时、iOS 在 `pod install` 时检测到 SDK 缺失即自动安装，缺配置且缺文件时报错提示。
-- 增加「SDK zip 打包约定」，附带当前版本两个 zip 的校验值；手工安装流程保留为备选方式。
+- 增加 `tool/package_sdk.sh` 打包脚本：从腾讯原始交付件目录自动定位并识别版本、提取重命名、可复现打包，输出交付件清单与产物 SHA-256；手工安装流程保留为备选方式。
 - 附带腾讯各 SDK 的完整原始更新日志（`docs/tencent-sdk-changelogs/`，已转 UTF-8）。
 - 移除示例 iOS 工程中的开发者 Team ID，签名改由本地 Xcode 自动管理。
 

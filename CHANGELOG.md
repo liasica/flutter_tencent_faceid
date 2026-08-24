@@ -1,7 +1,7 @@
 ## 1.1.0 - 2026-08-24
 
 - 支持在应用 `pubspec.yaml` 顶层配置 SDK zip 的 URL 或本地路径与可选 SHA-256：Android 在宿主构建时、iOS 在 `pod install` 时检测到 SDK 缺失即自动安装，缺配置且缺文件时报错提示。
-- 增加「SDK zip 打包约定」，附带当前版本两个 zip 的校验值；手工安装流程保留为备选方式。
+- 增加 `tool/package_sdk.sh` 打包脚本：从腾讯原始交付件目录自动定位并识别版本、提取重命名、可复现打包，输出交付件清单与产物 SHA-256；手工安装流程保留为备选方式。
 - 附带腾讯各 SDK 的完整原始更新日志（`docs/tencent-sdk-changelogs/`，已转 UTF-8）。
 - 移除示例 iOS 工程中的开发者 Team ID，签名改由本地 Xcode 自动管理。
 
