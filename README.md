@@ -72,7 +72,7 @@ flutter_tencent_faceid:
   ios_sdk_sha256: 64f253fa17941810d09db2eadf37608208b9fa17778594c596113e73a9940529
 ```
 
-`*_sdk_url` 也接受本地路径：`http://` 或 `https://` 开头按 URL 下载，其余一律按 zip 文件路径处理——绝对路径原样使用，相对路径以应用根目录（`pubspec.yaml` 所在目录）为基准。适合把 zip 提交到应用的私有仓库随代码分发：
+`*_sdk_url` 也接受本地路径：`http://` 或 `https://` 开头按 URL 下载，其余一律按 zip 文件路径处理——绝对路径原样使用，相对路径以应用根目录（`pubspec.yaml` 所在目录）为基准。适合把 zip 提交到应用的私有仓库随代码分发。在应用根目录执行 `dart run flutter_tencent_faceid:package_sdk <腾讯交付件目录> -o vendor` 可一步完成打包并自动写入以下配置：
 
 ```yaml
 flutter_tencent_faceid:
@@ -103,7 +103,13 @@ dart run flutter_tencent_faceid:sdk_path
 
 ## SDK zip 打包
 
-使用仓库自带脚本从腾讯原始交付件目录一键打包（macOS，需要系统 `zip`、`unzip`）：
+从腾讯原始交付件目录一键打包（macOS，需要系统 `zip`、`unzip`）。在应用项目根目录执行随包提供的命令：
+
+```shell
+dart run flutter_tencent_faceid:package_sdk <腾讯交付件目录> -o vendor
+```
+
+维护插件仓库时也可以直接执行同一脚本：
 
 ```shell
 tool/package_sdk.sh <腾讯交付件目录>
@@ -112,9 +118,11 @@ tool/package_sdk.sh <腾讯交付件目录>
 脚本按文件名模式在目录中递归定位 Android/iOS 人脸与 OCR 共 4 个原始压缩包（`Android-人脸核身-v*.zip`、`Android-OCR-v*.zip`、`iOS-人脸核身-v*.zip`、`iOS_OCR_SDK_V*.zip`，版本号自动识别），完成提取、重命名与打包，输出：
 
 - 交付件清单：4 个原始 zip 的文件名、SDK 版本与 SHA-256（用于更新下文「交付件校验」表）。
-- 两个产物 zip 及其 SHA-256，并给出可直接粘贴到应用 `pubspec.yaml` 的配置示例。
+- 两个产物 zip 及其 SHA-256。
 
-产物默认写入 `<腾讯交付件目录>/插件打包/`，可用 `-o` 指定输出目录、`-v` 覆盖产物文件名中的插件版本号。打包过程可复现：同一份交付件重复打包得到相同的 SHA-256。
+`-o` 指定输出目录（不存在时自动创建，相对路径以当前目录为基准），默认写入 `<腾讯交付件目录>/插件打包/`；`-v` 覆盖产物文件名中的插件版本号。打包过程可复现：同一份交付件重复打包得到相同的 SHA-256。
+
+打包完成后，若当前目录存在应用的 `pubspec.yaml`（插件仓库自身除外），脚本自动写入「自动下载安装」所需的配置段：没有该段时整段追加到文件末尾；已有该段时只改动 `android_sdk_url`、`android_sdk_sha256`、`ios_sdk_url`、`ios_sdk_sha256` 四行，段内其他内容原样保留。URL 写入输出目录相对当前目录的路径（如 `-o vendor` 时为 `vendor/tencent-faceid-sdk-android-<版本>.zip`），改用远程托管时把 URL 换成上传地址即可。
 
 zip 布局约定（与「手工安装」两节的提取与重命名规则一致，zip 内不带多余目录层级）：
 
@@ -536,7 +544,7 @@ OCR `3.6.0` 压缩包内的 Normal 版本为 `5.1.16`。本插件与人脸 SDK �
 ### 1.1.0 - 2026-08-24
 
 - 支持在应用 `pubspec.yaml` 顶层配置 SDK zip 的 URL 或本地路径与可选 SHA-256：Android 在宿主构建时、iOS 在 `pod install` 时检测到 SDK 缺失即自动安装，缺配置且缺文件时报错提示。
-- 增加 `tool/package_sdk.sh` 打包脚本：从腾讯原始交付件目录自动定位并识别版本、提取重命名、可复现打包，输出交付件清单与产物 SHA-256；手工安装流程保留为备选方式。
+- 增加 SDK 打包命令（应用侧 `dart run flutter_tencent_faceid:package_sdk`，插件仓库内 `tool/package_sdk.sh`）：从腾讯原始交付件目录自动定位并识别版本、提取重命名、可复现打包，输出交付件清单与产物 SHA-256，并自动在应用 `pubspec.yaml` 中追加或原位更新配置段；手工安装流程保留为备选方式。
 - 附带腾讯各 SDK 的完整原始更新日志（`docs/tencent-sdk-changelogs/`，已转 UTF-8）。
 - 移除示例 iOS 工程中的开发者 Team ID，签名改由本地 Xcode 自动管理。
 

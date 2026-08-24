@@ -29,14 +29,19 @@ fail() {
 usage() {
     cat <<'EOF'
 用法: tool/package_sdk.sh <腾讯交付件目录> [-o 输出目录] [-v 版本]
+      dart run flutter_tencent_faceid:package_sdk <腾讯交付件目录> [-o 输出目录] [-v 版本]
 
   <腾讯交付件目录>   腾讯原始交付件所在目录，脚本按文件名模式递归查找
                      Android/iOS 人脸与 OCR 共 4 个原始 zip
-  -o 输出目录        默认 <腾讯交付件目录>/插件打包
-  -v 版本            产物文件名中的插件版本号，默认读取仓库 pubspec.yaml 的 version
+  -o 输出目录        不存在时自动创建；相对路径以当前目录为基准。
+                     默认 <腾讯交付件目录>/插件打包
+  -v 版本            产物文件名中的插件版本号，默认读取插件 pubspec.yaml 的 version
 
-输出交付件清单（原始 zip 及其 SHA-256）、两个产物 zip 的 SHA-256，
-以及可直接粘贴到应用 pubspec.yaml 的配置示例。
+输出交付件清单（原始 zip 及其 SHA-256）与两个产物 zip 的 SHA-256。
+当前目录存在应用的 pubspec.yaml 时，自动在其中添加或更新
+flutter_tencent_faceid 配置段（新段追加到文件末尾；已有段只改动
+android_sdk_url、android_sdk_sha256、ios_sdk_url、ios_sdk_sha256 四行，
+URL 使用输出目录相对当前目录的路径）。
 EOF
 }
 
@@ -81,7 +86,7 @@ zip_version() {
 locate_zip() {
     local label=$1 pattern=$2 matches count
     matches=$(find "$SOURCE_DIR" -type f -name "$pattern" ! -path "$OUT_DIR/*" | LC_ALL=C sort)
-    [ -n "$matches" ] || fail "未找到${label}交付件（模式: $pattern），请确认目录"
+    [ -n "$matches" ] || fail "未找到${label}交付件（模式: ${pattern}），请确认目录"
     count=$(echo "$matches" | wc -l | tr -d ' ')
     if [ "$count" -gt 1 ]; then
         fail "发现多个${label}交付件，请保留唯一版本后重试:
@@ -132,7 +137,7 @@ for aar in "$AAR_DIR"/*.aar; do
         WbCloudFaceLiveSdk-face-v*) artifact='WbCloudFaceLiveSdk' ;;
         WbCloudNormal-noBugly-v*) artifact='WbCloudNormal' ;;
         WbCloudOcrSdk-pro-v*) artifact='WbCloudOcrSdk-pro' ;;
-        *) fail "无法识别的 AAR: $name，请更新脚本重命名规则" ;;
+        *) fail "无法识别的 AAR: ${name}，请更新脚本重命名规则" ;;
     esac
     aar_version=$(echo "$name" | sed -E 's/^.*-v([0-9][0-9.]*)-[0-9a-f]+\.aar$/\1/')
     [ "$aar_version" != "$name" ] || fail "无法从 $name 解析版本号"
@@ -174,11 +179,74 @@ echo '==> SHA-256'
 echo "  $ANDROID_SHA  $(basename "$ANDROID_OUT")"
 echo "  $IOS_SHA  $(basename "$IOS_OUT")"
 echo ''
-echo '==> 应用 pubspec.yaml 配置示例（URL 换成实际上传地址，或改用本地路径）'
-cat <<EOF
+
+# 在当前目录的应用 pubspec.yaml 中写入配置段：
+# 无该段时整段追加到文件末尾；已有该段时只改动四个配置行，其余内容原样保留
+ANDROID_URL=''
+IOS_URL=''
+resolve_config_urls() {
+    local rel
+    case "$OUT_DIR" in
+        "$PWD") rel='' ;;
+        "$PWD"/*) rel="${OUT_DIR#"$PWD"/}/" ;;
+        *) rel="$OUT_DIR/" ;;
+    esac
+    ANDROID_URL="${rel}$(basename "$ANDROID_OUT")"
+    IOS_URL="${rel}$(basename "$IOS_OUT")"
+}
+
+print_config() {
+    cat <<EOF
 flutter_tencent_faceid:
-  android_sdk_url: https://example.com/sdk/$(basename "$ANDROID_OUT")
+  android_sdk_url: $ANDROID_URL
   android_sdk_sha256: $ANDROID_SHA
-  ios_sdk_url: https://example.com/sdk/$(basename "$IOS_OUT")
+  ios_sdk_url: $IOS_URL
   ios_sdk_sha256: $IOS_SHA
 EOF
+}
+
+update_host_pubspec() {
+    local pubspec="$PWD/pubspec.yaml" tmp="$WORK_DIR/pubspec.updated"
+    resolve_config_urls
+    if [ ! -f "$pubspec" ]; then
+        echo '==> 当前目录没有 pubspec.yaml，未写入配置；应用 pubspec.yaml 配置示例：'
+        print_config
+        return
+    fi
+    if grep -q '^name:[[:space:]]*flutter_tencent_faceid[[:space:]]*$' "$pubspec"; then
+        echo '==> 当前目录是插件仓库，未写入配置；应用 pubspec.yaml 配置示例：'
+        print_config
+        return
+    fi
+    awk -v aurl="$ANDROID_URL" -v asha="$ANDROID_SHA" -v iurl="$IOS_URL" -v isha="$IOS_SHA" '
+        function emit_missing() {
+            if (!seen["aurl"]) print "  android_sdk_url: " aurl
+            if (!seen["asha"]) print "  android_sdk_sha256: " asha
+            if (!seen["iurl"]) print "  ios_sdk_url: " iurl
+            if (!seen["isha"]) print "  ios_sdk_sha256: " isha
+        }
+        /^flutter_tencent_faceid:[ \t]*(#.*)?$/ { in_sec = 1; found = 1; print; next }
+        in_sec && /^[^ \t#]/ { emit_missing(); in_sec = 0 }
+        in_sec && /^[ \t]+android_sdk_url:/ { print "  android_sdk_url: " aurl; seen["aurl"] = 1; next }
+        in_sec && /^[ \t]+android_sdk_sha256:/ { print "  android_sdk_sha256: " asha; seen["asha"] = 1; next }
+        in_sec && /^[ \t]+ios_sdk_url:/ { print "  ios_sdk_url: " iurl; seen["iurl"] = 1; next }
+        in_sec && /^[ \t]+ios_sdk_sha256:/ { print "  ios_sdk_sha256: " isha; seen["isha"] = 1; next }
+        { print }
+        END {
+            if (in_sec) emit_missing()
+            if (!found) {
+                print ""
+                print "flutter_tencent_faceid:"
+                print "  android_sdk_url: " aurl
+                print "  android_sdk_sha256: " asha
+                print "  ios_sdk_url: " iurl
+                print "  ios_sdk_sha256: " isha
+            }
+        }
+    ' "$pubspec" > "$tmp"
+    mv "$tmp" "$pubspec"
+    echo "==> 已更新 ${pubspec}："
+    print_config
+}
+
+update_host_pubspec
