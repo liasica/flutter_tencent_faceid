@@ -65,7 +65,7 @@ Git 方式的 `ref` 可以使用分支、Tag 或完整 Commit SHA；生产项目
 ```yaml
 flutter_tencent_faceid:
   android_sdk_url: https://example.com/sdk/tencent-faceid-sdk-android-1.1.0.zip
-  android_sdk_sha256: 60fb476e89c2600e9dc8e001a3a8d7b9ee3ae47dd0c7995ae73817863215414a
+  android_sdk_sha256: b2940ba923ffed361ec1be2ddaa6e62da8f06517defd4dd28bf300a9e1ae7505
   ios_sdk_url: https://example.com/sdk/tencent-faceid-sdk-ios-1.1.0.zip
   ios_sdk_sha256: 64f253fa17941810d09db2eadf37608208b9fa17778594c596113e73a9940529
 ```
@@ -75,7 +75,7 @@ flutter_tencent_faceid:
 ```yaml
 flutter_tencent_faceid:
   android_sdk_url: vendor/tencent-faceid-sdk-android-1.1.0.zip
-  android_sdk_sha256: 60fb476e89c2600e9dc8e001a3a8d7b9ee3ae47dd0c7995ae73817863215414a
+  android_sdk_sha256: b2940ba923ffed361ec1be2ddaa6e62da8f06517defd4dd28bf300a9e1ae7505
   ios_sdk_url: vendor/tencent-faceid-sdk-ios-1.1.0.zip
   ios_sdk_sha256: 64f253fa17941810d09db2eadf37608208b9fa17778594c596113e73a9940529
 ```
@@ -131,7 +131,7 @@ zip 布局约定（与「手工安装」两节的提取与重命名规则一致�
 
 | zip | 大小 | SHA-256 |
 | --- | --- | --- |
-| `tencent-faceid-sdk-android-1.1.0.zip` | 约 5.9MB | `60fb476e89c2600e9dc8e001a3a8d7b9ee3ae47dd0c7995ae73817863215414a` |
+| `tencent-faceid-sdk-android-1.1.0.zip` | 约 5.9MB | `b2940ba923ffed361ec1be2ddaa6e62da8f06517defd4dd28bf300a9e1ae7505` |
 | `tencent-faceid-sdk-ios-1.1.0.zip` | 约 81MB | `64f253fa17941810d09db2eadf37608208b9fa17778594c596113e73a9940529` |
 
 Android zip 解压时按文件名展平提取全部 `*.aar`；iOS zip 用系统 `unzip` 原样解压到 `ios/Frameworks/`。
@@ -157,18 +157,18 @@ Android zip 解压时按文件名展平提取全部 `*.aar`；iOS zip 用系统 
 
 | 来源压缩包 | 包内路径 | 目标文件 |
 | --- | --- | --- |
-| `Android-人脸核身-v6.6.14.zip` | `sdk/WbCloudFaceLiveSdk-face-v6.6.14-4e2eb256.aar` | `<PLUGIN_ROOT>/android/libs/com.liasica.com-WbCloudFaceLiveSdk-6.6.14.aar` |
-| `Android-人脸核身-v6.6.14.zip` | `sdk/WbCloudNormal-noBugly-v5.1.17-de4bceb.aar` | `<PLUGIN_ROOT>/android/libs/com.liasica.com-WbCloudNormal-5.1.17.aar` |
-| `Android-OCR-v3.6.0.zip` | `kyccloudocrsdkdemo-v3.6.0/app/libs/WbCloudOcrSdk-pro-v3.6.0-3d80a775.aar` | `<PLUGIN_ROOT>/android/libs/com.liasica.com-WbCloudOcrSdk-pro-3.6.0.aar` |
+| `Android-人脸核身-v6.6.14.zip` | `sdk/WbCloudFaceLiveSdk-face-v6.6.14-4e2eb256.aar` | `<PLUGIN_ROOT>/android/libs/com.liasica.flutter_tencent_faceid-WbCloudFaceLiveSdk-6.6.14.aar` |
+| `Android-人脸核身-v6.6.14.zip` | `sdk/WbCloudNormal-noBugly-v5.1.17-de4bceb.aar` | `<PLUGIN_ROOT>/android/libs/com.liasica.flutter_tencent_faceid-WbCloudNormal-5.1.17.aar` |
+| `Android-OCR-v3.6.0.zip` | `kyccloudocrsdkdemo-v3.6.0/app/libs/WbCloudOcrSdk-pro-v3.6.0-3d80a775.aar` | `<PLUGIN_ROOT>/android/libs/com.liasica.flutter_tencent_faceid-WbCloudOcrSdk-pro-3.6.0.aar` |
 
 完成后的目录必须是：
 
 ```text
 <PLUGIN_ROOT>/android/libs/
 |-- .gitkeep
-|-- com.liasica.com-WbCloudFaceLiveSdk-6.6.14.aar
-|-- com.liasica.com-WbCloudNormal-5.1.17.aar
-`-- com.liasica.com-WbCloudOcrSdk-pro-3.6.0.aar
+|-- com.liasica.flutter_tencent_faceid-WbCloudFaceLiveSdk-6.6.14.aar
+|-- com.liasica.flutter_tencent_faceid-WbCloudNormal-5.1.17.aar
+`-- com.liasica.flutter_tencent_faceid-WbCloudOcrSdk-pro-3.6.0.aar
 ```
 
 注意事项：
@@ -182,9 +182,9 @@ Android zip 解压时按文件名展平提取全部 `*.aar`；iOS zip 用系统 
 
 | 目标文件 | SHA-256 |
 | --- | --- |
-| `com.liasica.com-WbCloudFaceLiveSdk-6.6.14.aar` | `818672681619b50927a19d661935e1b56ed32bc40e2d7caac5a6fa5962a1e5d8` |
-| `com.liasica.com-WbCloudNormal-5.1.17.aar` | `5946e640c981e6a31ae455a490b4bddb63f307618c317832319cd181341c2f6b` |
-| `com.liasica.com-WbCloudOcrSdk-pro-3.6.0.aar` | `4830fd67929c7e7d4a37f94ebad7318d81d52ea9efe8957ab5b8cbc4ac8ba843` |
+| `com.liasica.flutter_tencent_faceid-WbCloudFaceLiveSdk-6.6.14.aar` | `818672681619b50927a19d661935e1b56ed32bc40e2d7caac5a6fa5962a1e5d8` |
+| `com.liasica.flutter_tencent_faceid-WbCloudNormal-5.1.17.aar` | `5946e640c981e6a31ae455a490b4bddb63f307618c317832319cd181341c2f6b` |
+| `com.liasica.flutter_tencent_faceid-WbCloudOcrSdk-pro-3.6.0.aar` | `4830fd67929c7e7d4a37f94ebad7318d81d52ea9efe8957ab5b8cbc4ac8ba843` |
 
 ### iOS SDK
 

@@ -141,7 +141,7 @@ for aar in "$AAR_DIR"/*.aar; do
     esac
     aar_version=$(echo "$name" | sed -E 's/^.*-v([0-9][0-9.]*)-[0-9a-f]+\.aar$/\1/')
     [ "$aar_version" != "$name" ] || fail "无法从 $name 解析版本号"
-    mv "$aar" "$AAR_DIR/com.liasica.com-${artifact}-${aar_version}.aar"
+    mv "$aar" "$AAR_DIR/com.liasica.flutter_tencent_faceid-${artifact}-${aar_version}.aar"
 done
 count=$(ls "$AAR_DIR" | wc -l | tr -d ' ')
 [ "$count" = 3 ] || fail "预期 3 个 AAR，实际提取到 $count 个"
