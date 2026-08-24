@@ -297,7 +297,7 @@ end
 <string>腾讯云人脸核身 SDK 需要访问照片资源。</string>
 ```
 
-iOS OCR `5.8.2` 的模拟器切片只包含 `x86_64`，插件 Podspec 因此在 iPhone Simulator 下排除 `arm64`。Apple Silicon Mac 上建议优先使用真机验证 OCR 和人脸核验。
+腾讯人脸主库与 OCR 全部库的模拟器切片只包含 `x86_64`（无 `arm64`），插件 Podspec 因此在 iPhone Simulator 下排除 `arm64`。构建时 Flutter 会提示本插件 "do not support arm64 architecture ... for Apple Silicon iOS 26+ simulators"，这是该排除的预期结果：真机构建与发布完全不受影响，只是无法在不再支持 Rosetta 的 iOS 26 及以上模拟器中运行。人脸核验与 OCR 依赖相机，模拟器本来就无法走通业务流程，Apple Silicon Mac 上建议直接用真机验证；确需模拟器联调 UI 时，使用 iOS 26 以下的模拟器 Runtime（`x86_64` 经 Rosetta 运行）。
 
 ## 后端参数与安全边界
 
@@ -598,9 +598,9 @@ OCR `3.6.0` 压缩包内的 Normal 版本为 `5.1.16`。本插件与人脸 SDK �
 
 确认完整复制人脸 SDK `Resources/` 和 OCR `Assets/`，不要只复制 XCFramework。检查 `TencentCloudHuiyanSDKFace.bundle`、`face-tracker-v003.bundle` 和 `WBOCRService.bundle` 是否存在。
 
-### Apple Silicon 模拟器无法链接 OCR
+### Apple Silicon 模拟器无法链接，或构建提示不支持 arm64 模拟器
 
-iOS OCR `5.8.2` 未提供 `arm64` 模拟器切片。请使用 `x86_64` 模拟器环境，或直接使用真机验证。
+腾讯人脸主库与 OCR `5.8.2` 全部库未提供 `arm64` 模拟器切片，插件 Podspec 在模拟器构建下排除 `arm64`，Flutter 因此提示插件不支持 Apple Silicon 的 iOS 26+ 模拟器。这不影响真机与发布，无需处理；需要模拟器时使用 iOS 26 以下的 Runtime（`x86_64` 经 Rosetta 运行），业务验证直接使用真机。腾讯后续交付带 `arm64` 模拟器切片的版本后，按「SDK 升级流程」更新并移除 Podspec 中的 `EXCLUDED_ARCHS` 排除即可。
 
 ### 更新 Git ref 或清理 Pub Cache 后 SDK 再次缺失
 
