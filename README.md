@@ -36,7 +36,13 @@
 
 ## 安装插件
 
-在应用的 `pubspec.yaml` 中直接引用 GitHub 仓库：
+插件已发布到 [pub.dev](https://pub.dev/packages/flutter_tencent_faceid)，在应用目录执行：
+
+```shell
+flutter pub add flutter_tencent_faceid
+```
+
+也可以在 `pubspec.yaml` 中直接引用 GitHub 仓库跟踪未发布的改动：
 
 ```yaml
 dependencies:
@@ -46,17 +52,9 @@ dependencies:
       ref: master
 ```
 
-不需要、也不应把仓库 clone 到业务项目的 `packages/` 目录。Flutter Pub 会根据 `url` 和 `ref` 解析依赖。
+Git 方式的 `ref` 可以使用分支、Tag 或完整 Commit SHA；生产项目应固定到已验证的版本，避免远端分支变化导致依赖内容漂移。
 
-执行依赖安装：
-
-```shell
-flutter pub get
-```
-
-`ref` 可以使用分支、Tag 或完整 Commit SHA。开发期间可以使用 `master`；生产项目应固定到已验证的 Tag 或 Commit，避免远端分支变化导致依赖内容漂移。
-
-应用项目应提交 `pubspec.lock`，确保团队和 CI 使用同一个已解析 Commit。
+应用项目应提交 `pubspec.lock`，确保团队和 CI 使用同一个已解析版本。
 
 腾讯 SDK 不随 Git 仓库分发，需要另行安装到 Flutter 下载后的插件目录。推荐使用下文的自动下载安装；手工安装作为备选方式保留。
 
@@ -484,12 +482,12 @@ flutter build ios --debug --no-codesign
 2. 运行 `tool/package_sdk.sh <新交付件目录>` 重新打包（提取、重命名、Normal 版本取舍由脚本完成）；腾讯更改文件命名或包内布局导致脚本报错时，同步调整脚本内的匹配模式与提取规则。
 3. 上传新产物并更新应用 `pubspec.yaml` 中的地址与校验值；插件本地开发目录按新 zip 重新安装。
 4. 核对并同步 Android 混淆规则、iOS 系统 Framework 依赖、最低系统版本和模拟器架构，不要混入旧版分拆 Framework。
-5. 按脚本输出更新本 README 的 SDK 版本表、交付件校验表、zip 校验表、AAR 校验值、版本日志摘要、`docs/tencent-sdk-changelogs/` 内的原始更新日志与 `CHANGELOG.md`。
+5. 按脚本输出更新本 README 的 SDK 版本表、交付件校验表、zip 校验表、AAR 校验值、版本日志摘要、`doc/tencent-sdk-changelogs/` 内的原始更新日志与 `CHANGELOG.md`。
 6. 重新生成 Dart 代码，执行静态分析，再完成 Android 和 iOS 真机双流程验证。
 
 ## SDK 版本日志摘要
 
-以下内容根据本次腾讯交付件内的更新日志提炼，用于记录升级原因和回归重点。各 SDK 的完整原始更新日志（已转为 UTF-8）随仓库存放在 [docs/tencent-sdk-changelogs/](docs/tencent-sdk-changelogs/)，升级 SDK 时同步替换。
+以下内容根据本次腾讯交付件内的更新日志提炼，用于记录升级原因和回归重点。各 SDK 的完整原始更新日志（已转为 UTF-8）随仓库存放在 [doc/tencent-sdk-changelogs/](doc/tencent-sdk-changelogs/)，升级 SDK 时同步替换。
 
 ### Android 标准人脸
 
@@ -543,9 +541,10 @@ OCR `3.6.0` 压缩包内的 Normal 版本为 `5.1.16`。本插件与人脸 SDK �
 
 ### 1.1.0 - 2026-08-24
 
+- 发布到 pub.dev，安装方式改为 hosted 依赖；Git 引用保留用于跟踪未发布的改动。
 - 支持在应用 `pubspec.yaml` 顶层配置 SDK zip 的 URL 或本地路径与可选 SHA-256：Android 在宿主构建时、iOS 在 `pod install` 时检测到 SDK 缺失即自动安装，缺配置且缺文件时报错提示。
 - 增加 SDK 打包命令（应用侧 `dart run flutter_tencent_faceid:package_sdk`，插件仓库内 `tool/package_sdk.sh`）：从腾讯原始交付件目录自动定位并识别版本、提取重命名、可复现打包，输出交付件清单与产物 SHA-256，并自动在应用 `pubspec.yaml` 中追加或原位更新配置段；手工安装流程保留为备选方式。
-- 附带腾讯各 SDK 的完整原始更新日志（`docs/tencent-sdk-changelogs/`，已转 UTF-8）。
+- 附带腾讯各 SDK 的完整原始更新日志（`doc/tencent-sdk-changelogs/`，已转 UTF-8）。
 - 移除示例 iOS 工程中的开发者 Team ID，签名改由本地 Xcode 自动管理。
 
 ### 1.0.0 - 2026-08-23
