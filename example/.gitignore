@@ -43,3 +43,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# package_sdk 打包产物（仅测试用，不提交）
+/vendor/

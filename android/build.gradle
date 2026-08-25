@@ -1,33 +1,11 @@
 import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
 
 group 'com.liasica.flutter_tencent_faceid'
 version '1.1.0'
 
-buildscript {
-    ext.kotlin_version = '1.7.10'
-    repositories {
-        google()
-        mavenCentral()
-        maven { url 'https://maven.google.com' }
-    }
-
-    dependencies {
-        classpath 'com.android.tools.build:gradle:7.3.1'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
-
 String localMavenPath = project.mkdir("build").absolutePath
 
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-        maven { url 'https://maven.google.com' }
-    }
-}
-
+// 把插件 build 目录下的本地 Maven 仓库注入宿主，供解析腾讯 AAR 坐标
 rootProject.allprojects {
     repositories {
         maven { url "file://$localMavenPath" }
@@ -268,116 +246,37 @@ public static String createPomStr(String groupId, String artifactId, String vers
             "</project>\n"
 }
 
-public static String getFileSha1(File file) {
-    FileInputStream input = null;
+// 计算文件摘要并按位数左补零
+public static String fileDigest(File file, String algorithm, int hexLength) {
+    FileInputStream input = null
     try {
-        input = new FileInputStream(file);
-        MessageDigest digest = MessageDigest.getInstance("SHA-1");
-        byte[] buffer = new byte[1024 * 1024 * 10];
-
-        int len = 0;
+        input = new FileInputStream(file)
+        MessageDigest digest = MessageDigest.getInstance(algorithm)
+        byte[] buffer = new byte[1024 * 1024 * 10]
+        int len = 0
         while ((len = input.read(buffer)) > 0) {
-            digest.update(buffer, 0, len);
+            digest.update(buffer, 0, len)
         }
-        String sha1 = new BigInteger(1, digest.digest()).toString(16);
-        int length = 40 - sha1.length();
-        if (length > 0) {
-            for (int i = 0; i < length; i++) {
-                sha1 = "0" + sha1;
-            }
+        String value = new BigInteger(1, digest.digest()).toString(16)
+        while (value.length() < hexLength) {
+            value = "0" + value
         }
-        return sha1;
-    }
-    catch (IOException e) {
-        System.out.println(e);
-    }
-    catch (NoSuchAlgorithmException e) {
-        System.out.println(e);
-    }
-    finally {
-        try {
-            if (input != null) {
-                input.close();
-            }
-        }
-        catch (IOException e) {
-            System.out.println(e);
+        return value
+    } finally {
+        if (input != null) {
+            input.close()
         }
     }
+}
+
+public static String getFileSha1(File file) {
+    return fileDigest(file, "SHA-1", 40)
 }
 
 public static String getFileSHA256(File file) {
-    FileInputStream input = null;
-    try {
-        input = new FileInputStream(file);
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        byte[] buffer = new byte[1024 * 1024 * 10];
-
-        int len = 0;
-        while ((len = input.read(buffer)) > 0) {
-            digest.update(buffer, 0, len);
-        }
-        String sha256 = new BigInteger(1, digest.digest()).toString(16);
-        int length = 64 - sha256.length();
-        if (length > 0) {
-            for (int i = 0; i < length; i++) {
-                sha256 = "0" + sha256;
-            }
-        }
-        return sha256;
-    }
-    catch (IOException e) {
-        System.out.println(e);
-    }
-    catch (NoSuchAlgorithmException e) {
-        System.out.println(e);
-    }
-    finally {
-        try {
-            if (input != null) {
-                input.close();
-            }
-        }
-        catch (IOException e) {
-            System.out.println(e);
-        }
-    }
+    return fileDigest(file, "SHA-256", 64)
 }
 
 public static String getFileMD5(File file) {
-    FileInputStream input = null;
-    try {
-        input = new FileInputStream(file);
-        MessageDigest digest = MessageDigest.getInstance("MD5");
-        byte[] buffer = new byte[1024 * 1024 * 10];
-
-        int len = 0;
-        while ((len = input.read(buffer)) > 0) {
-            digest.update(buffer, 0, len);
-        }
-        String md5 = new BigInteger(1, digest.digest()).toString(16);
-        int length = 32 - md5.length();
-        if (length > 0) {
-            for (int i = 0; i < length; i++) {
-                md5 = "0" + md5;
-            }
-        }
-        return md5;
-    }
-    catch (IOException e) {
-        System.out.println(e);
-    }
-    catch (NoSuchAlgorithmException e) {
-        System.out.println(e);
-    }
-    finally {
-        try {
-            if (input != null) {
-                input.close();
-            }
-        }
-        catch (IOException e) {
-            System.out.println(e);
-        }
-    }
+    return fileDigest(file, "MD5", 32)
 }

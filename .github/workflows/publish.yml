@@ -24,14 +24,33 @@ jobs:
         with:
           channel: stable
 
-      - name: 校验 tag 与 pubspec 版本一致
+      - name: 校验 tag 与各处版本号一致
         run: |
           version=$(grep '^version:' pubspec.yaml | awk '{print $2}')
           if [ "v$version" != "$GITHUB_REF_NAME" ]; then
             echo "tag $GITHUB_REF_NAME 与 pubspec version $version 不一致"
             exit 1
           fi
+          if ! grep -qE "s\.version *= *'$version'" ios/flutter_tencent_faceid.podspec; then
+            echo "ios/flutter_tencent_faceid.podspec 的 s.version 未更新为 $version"
+            exit 1
+          fi
+          if ! grep -qE "^version '$version'" android/build.gradle; then
+            echo "android/build.gradle 的 version 未更新为 $version"
+            exit 1
+          fi
 
-      - run: flutter pub get
+      # 版本已在 pub.dev 存在时跳过（tag 重推、workflow 重跑不再失败）
+      - name: 检查版本是否已发布
+        id: published
+        run: |
+          version=$(grep '^version:' pubspec.yaml | awk '{print $2}')
+          code=$(curl -s -o /dev/null -w '%{http_code}' "https://pub.dev/api/packages/flutter_tencent_faceid/versions/$version")
+          echo "exists=$([ "$code" = "200" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "pub.dev 版本 $version 查询返回 $code"
 
-      - run: flutter pub publish --force
+      - if: steps.published.outputs.exists == 'false'
+        run: flutter pub get
+
+      - if: steps.published.outputs.exists == 'false'
+        run: flutter pub publish --force

@@ -559,6 +559,7 @@ OCR `3.6.0` 压缩包内的 Normal 版本为 `5.1.16`。本插件与人脸 SDK �
 ### 1.1.0 - 2026-08-24
 
 - 发布到 pub.dev，安装方式改为 hosted 依赖；Git 引用保留用于跟踪未发布的改动。
+- Android AAR 统一使用 Maven group `com.liasica.flutter_tencent_faceid` 重命名。
 - 支持在应用 `pubspec.yaml` 顶层配置 SDK zip 的 URL 或本地路径与可选 SHA-256：Android 在宿主构建时、iOS 在 `pod install` 时检测到 SDK 缺失即自动安装，缺配置且缺文件时报错提示。
 - 增加 SDK 打包命令（应用侧 `dart run flutter_tencent_faceid:package_sdk`，插件仓库内 `tool/package_sdk.sh`）：从腾讯原始交付件目录自动定位并识别版本、提取重命名、可复现打包，输出交付件清单与产物 SHA-256，并自动在应用 `pubspec.yaml` 中追加或原位更新配置段；手工安装流程保留为备选方式。
 - 附带腾讯各 SDK 的完整原始更新日志（`doc/tencent-sdk-changelogs/`，已转 UTF-8）。
