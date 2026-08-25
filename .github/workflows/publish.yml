@@ -1,0 +1,37 @@
+name: Publish to pub.dev
+
+# 推送 vX.Y.Z 形式的 tag 时自动发布到 pub.dev。
+# 认证使用 pub.dev 官方的 GitHub Actions OIDC 机制，无需配置任何密钥；
+# 前置条件：在 pub.dev 包管理页（Admin）启用 Automated publishing，
+# 仓库填 liasica/flutter_tencent_faceid，tag 模式保持默认 v{{version}}
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # pub.dev OIDC 认证必需
+    steps:
+      - uses: actions/checkout@v7
+
+      # 建立 pub.dev 的 OIDC 临时凭据（发布本身由 flutter 执行）
+      - uses: dart-lang/setup-dart@v1
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: 校验 tag 与 pubspec 版本一致
+        run: |
+          version=$(grep '^version:' pubspec.yaml | awk '{print $2}')
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "tag $GITHUB_REF_NAME 与 pubspec version $version 不一致"
+            exit 1
+          fi
+
+      - run: flutter pub get
+
+      - run: flutter pub publish --force

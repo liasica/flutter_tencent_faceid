@@ -485,6 +485,23 @@ flutter build ios --debug --no-codesign
 5. 按脚本输出更新本 README 的 SDK 版本表、交付件校验表、zip 校验表、AAR 校验值、版本日志摘要、`doc/tencent-sdk-changelogs/` 内的原始更新日志与 `CHANGELOG.md`。
 6. 重新生成 Dart 代码，执行静态分析，再完成 Android 和 iOS 真机双流程验证。
 
+## 发布插件版本
+
+仓库配置了自动发布：推送 `vX.Y.Z` 形式的 tag 后，GitHub Actions 会校验 tag 与 `pubspec.yaml` 版本一致，然后通过 pub.dev 官方 OIDC 认证自动执行发布，无需在仓库配置任何密钥。
+
+一次性前置配置：在 [pub.dev 包管理页](https://pub.dev/packages/flutter_tencent_faceid/admin) 的 Automated publishing 中启用 GitHub Actions 发布，仓库填 `liasica/flutter_tencent_faceid`，tag 模式保持默认 `v{{version}}`。
+
+发版步骤：
+
+1. 更新 `pubspec.yaml`、iOS Podspec、`android/build.gradle` 中的版本号，同步 `CHANGELOG.md` 与本 README 的版本表、更新记录。
+2. 提交后打 tag 并推送：
+
+   ```shell
+   git tag v1.2.0 && git push origin master v1.2.0
+   ```
+
+3. 在仓库 Actions 页确认 Publish to pub.dev 工作流成功，pub.dev 新版本生效可能需要几分钟。
+
 ## SDK 版本日志摘要
 
 以下内容根据本次腾讯交付件内的更新日志提炼，用于记录升级原因和回归重点。各 SDK 的完整原始更新日志（已转为 UTF-8）随仓库存放在 [doc/tencent-sdk-changelogs/](doc/tencent-sdk-changelogs/)，升级 SDK 时同步替换。
