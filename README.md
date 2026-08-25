@@ -75,7 +75,7 @@ Android — the merged manifest adds these permissions; request camera permissio
 <uses-permission android:name="android.permission.WAKE_LOCK" />
 ```
 
-iOS — use a Podfile with `platform :ios, '13.0'`, `use_frameworks!` and `use_modular_headers!`, and provide `NSCameraUsageDescription`, `NSMicrophoneUsageDescription` and `NSPhotoLibraryUsageDescription` in `Info.plist`. The Tencent SDK ships no arm64 simulator slices, so the plugin excludes arm64 for simulators: it cannot run on Apple Silicon iOS 26+ simulators (which no longer support Rosetta). Real devices and releases are unaffected — the verification flow needs a camera anyway.
+iOS — use a Podfile with `platform :ios, '13.0'`, `use_frameworks!` and `use_modular_headers!`, and provide `NSCameraUsageDescription`, `NSMicrophoneUsageDescription` and `NSPhotoLibraryUsageDescription` in `Info.plist`. The Tencent SDK ships no arm64 simulator slices, so simulator builds link none of it and fall back to stubs: the app builds and runs on Apple Silicon iOS 26+ simulators, but `ocr()` and `verify()` return `null` there. Real devices and releases are unaffected — the verification flow needs a camera anyway.
 
 ## Usage
 

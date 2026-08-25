@@ -1,6 +1,6 @@
 PODS:
   - Flutter (1.0.0)
-  - flutter_tencent_faceid (1.1.0):
+  - flutter_tencent_faceid (1.1.2):
     - Flutter
 
 DEPENDENCIES:
@@ -15,7 +15,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
-  flutter_tencent_faceid: 61cf0c2491839d0a8da14fb8d4d0d7035c4d122e
+  flutter_tencent_faceid: 3b5ab80d385f5bab080a26bbc9335127f763525d
 
 PODFILE CHECKSUM: 0a7fcd92e8198bbdd67ecb4385b2bc4b0005a9ef
 

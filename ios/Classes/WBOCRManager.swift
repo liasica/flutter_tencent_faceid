@@ -5,10 +5,12 @@
 //  Created by liasica on 2024/1/15.
 //
 
+#if !targetEnvironment(simulator)
+
 import Flutter
 import WBOCRService
 
-public class WBOCRManager {
+class WBOCRManager {
     static let LOG_TAG = "[WBOCRManager]"
     
     static var version: String {
@@ -17,7 +19,7 @@ public class WBOCRManager {
         return version
     }
     
-    static public func start(_ result: @escaping FlutterResult,
+    static func start(_ result: @escaping FlutterResult,
                              appId: String,
                              userId: String,
                              sign: String,
@@ -82,3 +84,5 @@ public class WBOCRManager {
         result(FlutterError(code: err.domain, message:  err.userInfo.first?.value as? String ?? err.userInfo.description, details: nil))
     }
 }
+
+#endif

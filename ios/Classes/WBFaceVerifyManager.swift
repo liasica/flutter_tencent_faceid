@@ -5,14 +5,16 @@
 //  Created by liasica on 2024/1/16.
 //
 
+#if !targetEnvironment(simulator)
+
 import Flutter
 import TencentCloudHuiyanSDKFace
 
 // MARK: - WBFaceVerifyCustomerServiceDelegate
-public class WBFaceVerifyDelegate : NSObject, WBFaceVerifyCustomerServiceDelegate {
+class WBFaceVerifyDelegate : NSObject, WBFaceVerifyCustomerServiceDelegate {
     var result: FlutterResult?
 
-    public func wbfaceVerifyCustomerServiceDidFinished(with faceVerifyResult: WBFaceVerifyResult) {
+    func wbfaceVerifyCustomerServiceDidFinished(with faceVerifyResult: WBFaceVerifyResult) {
         let error = faceVerifyResult.error
         let data: Dictionary<String, Any?> = [
             "isSuccess": faceVerifyResult.isSuccess,
@@ -32,7 +34,7 @@ public class WBFaceVerifyDelegate : NSObject, WBFaceVerifyCustomerServiceDelegat
 }
 
 // MARK: - WBFaceVerifyManager
-public class WBFaceVerifyManager : NSObject {
+class WBFaceVerifyManager : NSObject {
     
     let LOG_TAG = "[WBFaceVerify]"
     
@@ -46,7 +48,7 @@ public class WBFaceVerifyManager : NSObject {
         
     }
     
-    public func start(userId: String,
+    func start(userId: String,
                       nonce: String,
                       sign: String,
                       appId: String,
@@ -114,3 +116,5 @@ public class WBFaceVerifyManager : NSObject {
         self.result(data)
     }
 }
+
+#endif

@@ -1,6 +1,8 @@
 import Flutter
-import TencentCloudHuiyanSDKFace
 import UIKit
+#if !targetEnvironment(simulator)
+    import TencentCloudHuiyanSDKFace
+#endif
 
 public class FlutterTencentFaceIdPlugin: NSObject, FlutterPlugin {
     static let methodChannelName = "com.liasica.flutter_tencent_faceid/method"
@@ -24,6 +26,24 @@ public class FlutterTencentFaceIdPlugin: NSObject, FlutterPlugin {
         }
     }
     
+#if targetEnvironment(simulator)
+
+    // 腾讯 SDK 未提供 arm64 模拟器切片，模拟器构建不链接 SDK，两项能力均不可用
+    // （活体核验与证件 OCR 都依赖摄像头，模拟器本就无法完成）
+    private func handleOcr(_: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        print(Self.unsupportedMessage)
+        result(nil)
+    }
+
+    private func handleFace(_: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        print(Self.unsupportedMessage)
+        result(nil)
+    }
+
+    private static let unsupportedMessage = "[FlutterTencentFaceId] 腾讯人脸核身 SDK 无 arm64 模拟器切片，模拟器上不可用，请用真机调试"
+
+#else
+
     private func handleOcr(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         // let arguments = call.arguments
         if let args = call.arguments as? Dictionary<String, Any>,
@@ -82,4 +102,6 @@ public class FlutterTencentFaceIdPlugin: NSObject, FlutterPlugin {
             result(nil)
         }
     }
+
+#endif
 }
