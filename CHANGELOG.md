@@ -1,5 +1,10 @@
+## 1.2.0 - 2026-08-25
+
+- Support Apple Silicon iOS 26+ simulators: the Podspec no longer excludes `arm64` for simulator builds. The Tencent SDK ships no arm64 simulator slices, so simulator builds now link none of it — framework search paths and linker flags are all scoped to `iphoneos`, `vendored_frameworks` is replaced by explicit per-SDK linking, and the Swift sources fall back to stubs under `#if targetEnvironment(simulator)` where `ocr()` and `verify()` return `null`. Device builds are unchanged.
+
 ## 1.1.2 - 2026-08-25
 
+- Fix the Xcode error `Build input files cannot be found: .../XCFrameworkIntermediates/flutter_tencent_faceid/libWbCombined.a, libYTCommonLiveness.a` on host app builds: CocoaPods declares the copy outputs of static-library XCFrameworks as `.framework` instead of `.a`, so Xcode 16's build-system validation rejects `-force_load` paths pointing at `XCFrameworkIntermediates`. The Podspec now force-loads the original slices inside the plugin's `Frameworks` directory via per-SDK (`iphoneos`/`iphonesimulator`) linker flags, and no longer vendors `libWbCombined.xcframework`/`YTCommonLiveness.xcframework` (their auto-generated `-l` flags would link a second copy and produce duplicate symbols together with `-ObjC`).
 - Rewrite `README.md` and `CHANGELOG.md` in English for pub.dev; the full Chinese documentation moves to `doc/README.zh-CN.md` and remains the primary reference.
 - Rewrite the package description in English and format `bin/package_sdk.dart` with the Dart formatter.
 

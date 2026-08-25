@@ -17,7 +17,7 @@
 
 | 项目 | 当前版本或要求 |
 | --- | --- |
-| 插件 | `1.1.2` |
+| 插件 | `1.2.0` |
 | Dart | `>=3.9.0 <4.0.0` |
 | Flutter | `>=3.41.0` |
 | Android 构建 JDK | `17` |
@@ -555,6 +555,10 @@ OCR `3.6.0` 压缩包内的 Normal 版本为 `5.1.16`。本插件与人脸 SDK �
 `5.8.2` 必须同时携带 `WBOCRService.xcframework`、`tiny_opencv2.xcframework`、`YTImageRefiner.xcframework` 和 `WBOCRService.bundle`。
 
 ## 插件更新记录
+
+### 1.2.0 - 2026-08-25
+
+- 支持 Apple Silicon 的 iOS 26+ 模拟器：Podspec 不再为模拟器构建排除 `arm64`。腾讯 SDK 未提供 arm64 模拟器切片，因此模拟器构建完全不链接腾讯 SDK——框架搜索路径与链接参数全部限定在 `iphoneos`，`vendored_frameworks` 由显式的按 SDK 链接配置取代，Swift 侧在 `#if targetEnvironment(simulator)` 下走桩实现，`ocr()` 与 `verify()` 返回 `null`。真机构建行为不变。
 
 ### 1.1.2 - 2026-08-25
 
