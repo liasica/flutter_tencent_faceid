@@ -78,7 +78,7 @@ end
 
 Pod::Spec.new do |s|
   s.name             = 'flutter_tencent_faceid'
-  s.version          = '1.1.0'
+  s.version          = '1.1.1'
   s.summary          = '腾讯云人脸核身 Flutter 插件，支持身份证 OCR 与活体人脸核验'
   s.description      = <<-DESC
   腾讯云人脸核身 Flutter 插件，支持身份证 OCR 与活体人脸核验。

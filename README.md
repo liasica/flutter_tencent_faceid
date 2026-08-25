@@ -17,7 +17,7 @@
 
 | 项目 | 当前版本或要求 |
 | --- | --- |
-| 插件 | `1.1.0` |
+| 插件 | `1.1.1` |
 | Dart | `>=3.9.0 <4.0.0` |
 | Flutter | `>=3.41.0` |
 | Android 构建 JDK | `17` |
@@ -555,6 +555,14 @@ OCR `3.6.0` 压缩包内的 Normal 版本为 `5.1.16`。本插件与人脸 SDK �
 `5.8.2` 必须同时携带 `WBOCRService.xcframework`、`tiny_opencv2.xcframework`、`YTImageRefiner.xcframework` 和 `WBOCRService.bundle`。
 
 ## 插件更新记录
+
+### 1.1.1 - 2026-08-25
+
+- 增加 GitHub Actions 自动发布：推送 `vX.Y.Z` tag 后经 pub.dev OIDC 认证自动发版，发布前校验 pubspec、Podspec 与 Gradle 三处版本一致，版本已存在时自动跳过。
+- 新增 `tool/bump_version.sh`，一条命令同步三处版本号。
+- 完善 pubspec 的 `description` 与 `topics`。
+- 精简 Android 构建脚本：移除无用的 `buildscript` 块与重复仓库注入，减少对宿主项目的侵入。
+- 说明 Apple Silicon iOS 26+ 模拟器的 arm64 提示为预期行为（腾讯 SDK 未提供 arm64 模拟器切片，不影响真机与发布）。
 
 ### 1.1.0 - 2026-08-24
 

@@ -1,7 +1,7 @@
 import java.security.MessageDigest
 
 group 'com.liasica.flutter_tencent_faceid'
-version '1.1.0'
+version '1.1.1'
 
 String localMavenPath = project.mkdir("build").absolutePath
 

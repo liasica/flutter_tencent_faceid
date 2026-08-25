@@ -1,3 +1,11 @@
+## 1.1.1 - 2026-08-25
+
+- 增加 GitHub Actions 自动发布：推送 `vX.Y.Z` tag 后经 pub.dev OIDC 认证自动发版，发布前校验 pubspec、Podspec 与 Gradle 三处版本一致，版本已存在时自动跳过。
+- 新增 `tool/bump_version.sh`，一条命令同步三处版本号。
+- 完善 pubspec 的 `description` 与 `topics`。
+- 精简 Android 构建脚本：移除无用的 `buildscript` 块与重复仓库注入，减少对宿主项目的侵入。
+- 说明 Apple Silicon iOS 26+ 模拟器的 arm64 提示为预期行为（腾讯 SDK 未提供 arm64 模拟器切片，不影响真机与发布）。
+
 ## 1.1.0 - 2026-08-24
 
 - 发布到 pub.dev，安装方式改为 hosted 依赖；Git 引用保留用于跟踪未发布的改动。
