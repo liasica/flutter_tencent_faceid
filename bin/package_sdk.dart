@@ -23,10 +23,9 @@ Future<void> main(List<String> args) async {
     return;
   }
 
-  final process = await Process.start(
-    'bash',
-    [script, ...args],
-    mode: ProcessStartMode.inheritStdio,
-  );
+  final process = await Process.start('bash', [
+    script,
+    ...args,
+  ], mode: ProcessStartMode.inheritStdio);
   exitCode = await process.exitCode;
 }
