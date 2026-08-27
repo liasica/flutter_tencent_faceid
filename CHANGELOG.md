@@ -1,3 +1,7 @@
+## 1.2.1 - 2026-08-27
+
+- Fix duplicate Objective-C class implementations: `YTLivenessRSA`, `YTLivenessAuthManager` and the other Tencent SDK classes ended up in both `flutter_tencent_faceid.framework` and the host executable, so the runtime logged `Class ... is implemented in both ...` and warned about spurious casting failures and mysterious crashes. Under `use_frameworks!` the plugin's dynamic framework already contains those implementations and the host resolves them through dyld, so the host-side `-force_load` in `user_target_xcconfig` was redundant and has been removed. Device builds link unchanged — no undefined symbols — and the Tencent classes now exist exactly once, in the plugin framework.
+
 ## 1.2.0 - 2026-08-25
 
 - Support Apple Silicon iOS 26+ simulators: the Podspec no longer excludes `arm64` for simulator builds. The Tencent SDK ships no arm64 simulator slices, so simulator builds now link none of it — framework search paths and linker flags are all scoped to `iphoneos`, `vendored_frameworks` is replaced by explicit per-SDK linking, and the Swift sources fall back to stubs under `#if targetEnvironment(simulator)` where `ocr()` and `verify()` return `null`. Device builds are unchanged.

@@ -17,7 +17,7 @@
 
 | 项目 | 当前版本或要求 |
 | --- | --- |
-| 插件 | `1.2.0` |
+| 插件 | `1.2.1` |
 | Dart | `>=3.9.0 <4.0.0` |
 | Flutter | `>=3.41.0` |
 | Android 构建 JDK | `17` |
@@ -497,7 +497,7 @@ flutter build ios --debug --no-codesign
 2. 提交后打 tag 并推送：
 
    ```shell
-   git tag v1.2.0 && git push origin master v1.2.0
+   git tag v1.2.1 && git push origin master v1.2.1
    ```
 
 3. 在仓库 Actions 页确认 Publish to pub.dev 工作流成功，pub.dev 新版本生效可能需要几分钟。
@@ -555,6 +555,10 @@ OCR `3.6.0` 压缩包内的 Normal 版本为 `5.1.16`。本插件与人脸 SDK �
 `5.8.2` 必须同时携带 `WBOCRService.xcframework`、`tiny_opencv2.xcframework`、`YTImageRefiner.xcframework` 和 `WBOCRService.bundle`。
 
 ## 插件更新记录
+
+### 1.2.1 - 2026-08-27
+
+- 修复 Objective-C 类重复实现：`YTLivenessRSA`、`YTLivenessAuthManager` 等腾讯 SDK 类同时存在于 `flutter_tencent_faceid.framework` 与宿主可执行文件，运行时输出 `Class ... is implemented in both ...`，并提示可能引发类型转换失败与难以定位的崩溃。`use_frameworks!` 下插件动态框架已完整包含这些实现，宿主按动态库链接即可由 dyld 解析，因此移除 `user_target_xcconfig` 中宿主侧多余的 `-force_load`。真机构建链接行为不变，不产生 undefined symbols，腾讯类只在插件框架内保留一份。
 
 ### 1.2.0 - 2026-08-25
 

@@ -123,14 +123,12 @@ force_load_flags = lambda do |base|
   device_static_libs.map { |path| %(-force_load "#{base}/#{relative_to_frameworks.call(path)}") }.join(' ')
 end
 
-# 插件目标内 Frameworks 目录用 PODS_TARGET_SRCROOT 定位；宿主目标没有该
-# 变量，走 Flutter 固定生成的 .symlinks 插件软链
+# 插件目标内 Frameworks 目录用 PODS_TARGET_SRCROOT 定位
 pod_frameworks = '${PODS_TARGET_SRCROOT}/Frameworks'
-user_frameworks = '${PODS_ROOT}/../.symlinks/plugins/flutter_tencent_faceid/ios/Frameworks'
 
 Pod::Spec.new do |s|
   s.name             = 'flutter_tencent_faceid'
-  s.version          = '1.2.0'
+  s.version          = '1.2.1'
   s.summary          = '腾讯云人脸核身 Flutter 插件，支持身份证 OCR 与活体人脸核验'
   s.description      = <<-DESC
   腾讯云人脸核身 Flutter 插件，支持身份证 OCR 与活体人脸核验。
@@ -156,12 +154,11 @@ Pod::Spec.new do |s|
     'OTHER_LDFLAGS' => '$(inherited) -ObjC',
     'OTHER_LDFLAGS[sdk=iphoneos*]' => "$(inherited) -ObjC #{framework_link_flags} #{force_load_flags.call(pod_frameworks)}",
   }
-  # use_frameworks! 下腾讯静态 framework 的实现会随插件 framework 一起链接到
-  # 宿主，宿主链接时也必须强制装载底层实现库，否则最终 App 仍会出现 C++
-  # undefined symbols。同样只在真机生效。
-  s.user_target_xcconfig = {
-    'OTHER_LDFLAGS[sdk=iphoneos*]' => "$(inherited) #{force_load_flags.call(user_frameworks)}",
-  }
+  # 宿主侧不再 force_load 腾讯静态库：use_frameworks!（动态 framework）下插件
+  # 已把这些实现完整装进 flutter_tencent_faceid.framework，宿主按动态库链接即可
+  # 由 dyld 解析。宿主再 force_load 一遍会让 YTLivenessRSA、YTLivenessAuthManager
+  # 等 ObjC 类在插件 framework 与宿主可执行文件里各存在一份，运行时 objc runtime
+  # 报重复实现，并可能导致类型转换失败与难以定位的崩溃
   s.swift_version = '5.9'
 
   # 腾讯 SDK 的 xcframework 全部由上方 xcconfig 按真机切片手工链接，不交给

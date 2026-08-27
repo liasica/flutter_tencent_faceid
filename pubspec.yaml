@@ -1,6 +1,6 @@
 name: flutter_tencent_faceid
 description: 'Tencent Cloud FaceID Flutter plugin wrapping the native Android and iOS SDKs, providing ID-card OCR and liveness face verification with automatic SDK installation at build time.'
-version: 1.2.0
+version: 1.2.1
 homepage: https://github.com/liasica/flutter_tencent_faceid
 repository: https://github.com/liasica/flutter_tencent_faceid
 issue_tracker: https://github.com/liasica/flutter_tencent_faceid/issues
