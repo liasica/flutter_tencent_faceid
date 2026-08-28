@@ -15,7 +15,6 @@ rootProject.allprojects {
 }
 
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
 
 android {
     if (project.android.hasProperty("namespace")) {
@@ -29,10 +28,6 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
-
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
         test.java.srcDirs += 'src/test/kotlin'
@@ -41,6 +36,13 @@ android {
     defaultConfig {
         minSdkVersion 19
         consumerProguardFiles 'kyc-cloud-normal-proguard-rules.pro', 'txkyc-face-consumer-proguard-rules.pro'
+    }
+}
+
+// 内置 Kotlin 下 kotlinOptions 已移除，编译目标改由顶层 kotlin 扩展声明
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8
     }
 }
 

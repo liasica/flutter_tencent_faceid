@@ -18,8 +18,8 @@
 | 项目 | 当前版本或要求 |
 | --- | --- |
 | 插件 | `1.2.1` |
-| Dart | `>=3.9.0 <4.0.0` |
-| Flutter | `>=3.41.0` |
+| Dart | `>=3.12.0 <4.0.0` |
+| Flutter | `>=3.44.0` |
 | Android 构建 JDK | `17` |
 | Android 示例 Gradle | `8.14.3` |
 | Android 示例 Android Gradle Plugin | `8.12.3` |

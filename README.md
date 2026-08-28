@@ -18,8 +18,8 @@ A Flutter plugin for Tencent Cloud FaceID, wrapping the native Android and iOS S
 
 | Item | Version |
 | --- | --- |
-| Dart | `>=3.9.0 <4.0.0` |
-| Flutter | `>=3.41.0` |
+| Dart | `>=3.12.0 <4.0.0` |
+| Flutter | `>=3.44.0` |
 | Android | `minSdk 19`, JDK 17 for builds |
 | iOS | `13.0+`, integrated via CocoaPods |
 | Tencent SDK (Android) | Face `6.6.14`, Normal `5.1.17`, OCR `3.6.0` |
