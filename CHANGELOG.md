@@ -1,3 +1,8 @@
+## 1.3.0 - 2026-08-28
+
+- Updates the minimum supported SDK version to Flutter 3.44/Dart 3.12.
+- Migrates to built-in Kotlin: `android/build.gradle` no longer applies the Kotlin Gradle Plugin, and the `kotlinOptions {}` block is replaced by a top-level `kotlin { compilerOptions {} }` block. Apps built with Flutter 3.44+ no longer list this plugin in the `plugins that apply Kotlin Gradle Plugin (KGP)` build warning, which future Flutter versions will turn into a build failure. Kotlin compilation is unchanged in practice: it comes from the Android Gradle Plugin itself on AGP 9+ with `android.builtInKotlin=true`, and otherwise from the Flutter Gradle Plugin, which applies KGP on the plugin's behalf.
+
 ## 1.2.1 - 2026-08-27
 
 - Fix duplicate Objective-C class implementations: `YTLivenessRSA`, `YTLivenessAuthManager` and the other Tencent SDK classes ended up in both `flutter_tencent_faceid.framework` and the host executable, so the runtime logged `Class ... is implemented in both ...` and warned about spurious casting failures and mysterious crashes. Under `use_frameworks!` the plugin's dynamic framework already contains those implementations and the host resolves them through dyld, so the host-side `-force_load` in `user_target_xcconfig` was redundant and has been removed. Device builds link unchanged — no undefined symbols — and the Tencent classes now exist exactly once, in the plugin framework.

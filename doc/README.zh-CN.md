@@ -17,7 +17,7 @@
 
 | 项目 | 当前版本或要求 |
 | --- | --- |
-| 插件 | `1.2.1` |
+| 插件 | `1.3.0` |
 | Dart | `>=3.12.0 <4.0.0` |
 | Flutter | `>=3.44.0` |
 | Android 构建 JDK | `17` |
@@ -497,7 +497,7 @@ flutter build ios --debug --no-codesign
 2. 提交后打 tag 并推送：
 
    ```shell
-   git tag v1.2.1 && git push origin master v1.2.1
+   git tag v1.3.0 && git push origin master v1.3.0
    ```
 
 3. 在仓库 Actions 页确认 Publish to pub.dev 工作流成功，pub.dev 新版本生效可能需要几分钟。
@@ -555,6 +555,11 @@ OCR `3.6.0` 压缩包内的 Normal 版本为 `5.1.16`。本插件与人脸 SDK �
 `5.8.2` 必须同时携带 `WBOCRService.xcframework`、`tiny_opencv2.xcframework`、`YTImageRefiner.xcframework` 和 `WBOCRService.bundle`。
 
 ## 插件更新记录
+
+### 1.3.0 - 2026-08-28
+
+- 迁移到 Flutter 内置 Kotlin：`android/build.gradle` 不再 `apply plugin: 'kotlin-android'`，`kotlinOptions {}` 块改为顶层 `kotlin { compilerOptions {} }`。Flutter 3.44+ 的构建警告「plugins that apply Kotlin Gradle Plugin (KGP)」不再列出本插件，后续 Flutter 版本会把该警告升级为构建失败。Kotlin 编译能力实际未变：AGP 9 且 `android.builtInKotlin=true` 时由 AGP 自身提供，其余情况由 Flutter Gradle Plugin 代为 apply KGP。
+- 最低支持版本相应提高到 Flutter `3.44.0` 与 Dart `3.12.0`：`kotlin.compilerOptions {}` 需要 KGP 2.0 以上，代为 apply KGP 的兜底逻辑也是 Flutter 3.44 才有。
 
 ### 1.2.1 - 2026-08-27
 
